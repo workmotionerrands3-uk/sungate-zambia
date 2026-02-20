@@ -129,21 +129,25 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
 
 
     const filteredProducts = products.filter(p => {
-        // 1. Category Filter
-        const matchesCategory = filter === 'All' || p.category === filter
+        // 1. Category Filter - Case-insensitive and trimmed
+        const matchesCategory = filter === 'All' || 
+            (p.category && p.category.toLowerCase().trim() === filter.toLowerCase().trim())
 
         // 2. Search Filter
-        const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.category.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesSearch = (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (p.category || '').toLowerCase().includes(searchQuery.toLowerCase())
 
         // 3. Price Filter
         let matchesPrice = true
-        if (priceRange !== 'all' && p.price) {
-            const priceVal = parseFloat(p.price.toString().replace(/[K,\s]/g, ''))
+        if (priceRange !== 'all') {
+            const priceVal = parseFloat(p.price?.toString().replace(/[K,\s]/g, '') || '')
             if (!isNaN(priceVal)) {
                 if (priceRange === 'under1000') matchesPrice = priceVal < 1000
                 else if (priceRange === '1000to5000') matchesPrice = priceVal >= 1000 && priceVal <= 5000
                 else if (priceRange === 'over5000') matchesPrice = priceVal > 5000
+            } else {
+                // If price is not a number (e.g. "Price on Request"), hide it if a range is selected
+                matchesPrice = false
             }
         }
 
