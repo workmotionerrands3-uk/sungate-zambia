@@ -44,7 +44,8 @@ const AuthForm = ({ onClose, onAuthComplete, isFullPage = false, isUpdatePasswor
                         data: {
                             full_name: fullName,
                             role: role
-                        }
+                        },
+                        redirectTo: window.location.origin
                     }
                 })
                 if (error) throw error

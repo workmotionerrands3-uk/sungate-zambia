@@ -59,7 +59,7 @@ const AdminDashboard = ({ profile }) => {
                 // Explicitly specify which foreign key relationship to use for profiles
                 const { data, error } = await supabase
                     .from('inquiries')
-                    .select('*, products(name, price), buyer:profiles!buyer_id(full_name, email)')
+                    .select('*, products(name, price), buyer:profiles(full_name, email)')
                     .order('created_at', { ascending: false })
 
                 if (error) throw error
@@ -639,6 +639,39 @@ const AdminDashboard = ({ profile }) => {
                                             <label htmlFor="cert">Certified Installer</label>
                                         </div>
                                         <textarea className="input-field" placeholder="Services (comma separated)" value={formData.services ? (Array.isArray(formData.services) ? formData.services.join(', ') : formData.services) : ''} onChange={e => setFormData({ ...formData, services: e.target.value.split(',').map(s => s.trim()) })} style={{ ...inputStyle, height: '80px' }} />
+                                    </>
+                                ) : activeTab === 'inquiries' ? (
+                                    <>
+                                        {/* Helper logic to parse safe data from message string */}
+                                        {(() => {
+                                            const parseMessage = (msg) => {
+                                                if (!msg || !msg.includes('QTY:')) return { qty: '1', notes: msg || 'N/A', phone: 'N/A' };
+                                                const parts = msg.split('|').reduce((acc, part) => {
+                                                    const pair = part.split(':');
+                                                    if (pair.length >= 2) {
+                                                        const key = pair[0].trim();
+                                                        const val = pair.slice(1).join(':').trim();
+                                                        acc[key] = val;
+                                                    }
+                                                    return acc;
+                                                }, {});
+                                                return { qty: parts['QTY'] || '1', notes: parts['NOTES'] || 'N/A', phone: parts['PHONE'] || 'N/A' };
+                                            }
+                                            const details = parseMessage(formData.message);
+
+                                            return (
+                                                <div style={{ background: '#f8f9fa', padding: '16px', borderRadius: '8px', marginBottom: '20px' }}>
+                                                    <h4 style={{ marginBottom: '8px', color: '#555' }}>Customer Request</h4>
+                                                    <p><strong>Product:</strong> {formData.products?.name || 'N/A'}</p>
+                                                    <p><strong>Quantity:</strong> {details.qty}</p>
+                                                    <p><strong>Notes:</strong> {details.notes}</p>
+                                                    <p><strong>Customer:</strong> {formData.buyer?.full_name || 'Anonymous'} ({formData.buyer?.email || 'No Email'})</p>
+                                                    <p><strong>Customer Phone:</strong> {details.phone}</p>
+                                                </div>
+                                            )
+                                        })()}
+
+                                        <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '20px 0' }} />
                                     </>
                                 ) : activeTab === 'articles' ? (
                                     <>
