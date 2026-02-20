@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react'
 import { ShieldCheck, Filter, ShoppingCart, Info, CheckCircle, Heart, Search, LayoutGrid, Box, Battery, Zap, Droplets, Sun, Waves, ArrowUpDown, SlidersHorizontal, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
