@@ -1,0 +1,13 @@
+node_modules
+dist
+.env
+.eslint*
+*.js
+!src/**/*.js
+served_index.html
+transformed_*.js
+debug_*.js
+diagnose_*.js
+lint_output.txt
+favicon-snippet.html
+*.sql
