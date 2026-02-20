@@ -1336,7 +1336,7 @@ const App = () => {
   if (location.pathname === "/terms") return <TermsPage />;
   if (location.pathname === "/privacy") return <PrivacyPolicyPage />;
   if (location.pathname === "/help") return <HelpCenterPage />;
-  if (location.pathname === "/partners") {
+  if (location.pathname === "/partners" || location.pathname === "/partners/") {
     return (
       <div className="App">
         <Navbar 
