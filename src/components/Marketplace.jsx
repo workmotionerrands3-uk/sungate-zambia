@@ -51,7 +51,25 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
 
             if (error) throw error
 
-            console.log("Quote sent successfully")
+            console.log("Quote sent successfully. Triggering email...");
+            
+            // Trigger the Edge Function for email notification
+            try {
+                await supabase.functions.invoke('hyper-api', {
+                    body: {
+                        product_name: selectedProduct.name,
+                        customer_email: session.user.email,
+                        customer_phone: quoteForm.phone,
+                        quantity: quoteForm.quantity,
+                        notes: quoteForm.notes
+                    }
+                });
+                console.log("Email notification triggered.");
+            } catch (emailErr) {
+                console.error("Failed to trigger email notification:", emailErr);
+                // We don't throw here so the user still sees their quote was "sent" to the DB
+            }
+
             onNotify ? onNotify(`Quote request sent! Refreshing...`, "success") : alert("Quote Request Sent Successfully!")
             setShowQuoteModal(false)
 

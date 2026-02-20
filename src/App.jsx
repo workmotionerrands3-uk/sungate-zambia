@@ -1257,6 +1257,25 @@ const App = () => {
         throw new Error(`Failed to submit some quote requests.`);
       }
 
+      // Trigger Email Notifications via Edge Function
+      try {
+        const emailPromises = items.map(item => 
+          supabase.functions.invoke('hyper-api', {
+            body: {
+              product_name: item.name,
+              customer_email: session.user.email,
+              customer_phone: phone,
+              quantity: 1,
+              notes: "Requested from cart"
+            }
+          })
+        );
+        await Promise.all(emailPromises);
+        console.log("Cart email notifications triggered.");
+      } catch (emailErr) {
+        console.error("Failed to trigger cart email notifications:", emailErr);
+      }
+
       notify(
         `Successfully requested quotes for ${items.length} items!`,
         "success",
