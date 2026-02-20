@@ -116,29 +116,21 @@ const KnowledgeHub = () => {
 
                 {/* Article Reader Modal */}
                 {selectedArticle && (
-                    <div style={{
-                        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-                        backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 1000,
-                        display: 'flex', justifyContent: 'center', alignItems: 'center',
-                        backdropFilter: 'blur(8px)', padding: '20px'
-                    }}>
-                        <div style={{
-                            background: 'white', width: '100%', maxWidth: '850px', maxHeight: '95vh',
-                            borderRadius: '32px', overflow: 'hidden', position: 'relative',
-                            display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
-                        }}>
+                    <div className="modal-overlay">
+                        <div className="modal-container">
                             <button
                                 onClick={() => setSelectedArticle(null)}
-                                style={{ position: 'absolute', top: '24px', right: '24px', background: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10 }}>
+                                className="modal-close-btn"
+                                style={{ position: 'absolute', background: 'white', border: 'none', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10 }}>
                                 <X size={24} color="var(--trust-blue)" />
                             </button>
 
-                            <div style={{ height: '350px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                            <div className="modal-image-container" style={{ height: '350px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                                 <img src={selectedArticle.image} alt={selectedArticle.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', height: '150px', background: 'linear-gradient(to top, white, transparent)' }}></div>
                             </div>
 
-                            <div style={{ padding: '0 clamp(20px, 5vw, 40px) 40px clamp(20px, 5vw, 40px)', overflowY: 'auto', marginTop: '-60px', position: 'relative' }}>
+                            <div className="modal-scroll-container">
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                                     <span style={{ padding: '6px 16px', background: 'var(--sky-blue)', color: 'var(--trust-blue)', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 800 }}>
                                         {selectedArticle.category}
