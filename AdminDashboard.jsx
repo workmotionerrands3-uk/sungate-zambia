@@ -59,7 +59,7 @@ const AdminDashboard = ({ profile }) => {
                 // Explicitly specify which foreign key relationship to use for profiles
                 const { data, error } = await supabase
                     .from('inquiries')
-                    .select('*, products(name, price), buyer:profiles!buyer_id(full_name, email)')
+                    .select('*, products(name, price), buyer:profiles!inquiries_buyer_id_fkey(full_name, email)')
                     .order('created_at', { ascending: false })
 
                 if (error) throw error
@@ -401,9 +401,14 @@ const AdminDashboard = ({ profile }) => {
                 </div>
 
                 {error && (
-                    <div style={{ padding: '20px', background: '#ffebee', color: 'red', borderRadius: '8px', marginBottom: '20px' }}>
-                        <strong>Error:</strong> {error} <br />
-                        <small>If you see "policy violation", please ask the developer to run the database migration scripts.</small>
+                    <div style={{ padding: '20px', background: '#ffebee', border: '1px solid #ffcdd2', color: 'red', borderRadius: '8px', marginBottom: '20px' }}>
+                        <div style={{ fontWeight: 800, marginBottom: '8px' }}>DATABASE ERROR (Tab: {activeTab})</div>
+                        <div style={{ fontContent: 'monospace', fontSize: '0.9rem', background: 'rgba(255,255,255,0.5)', padding: '10px', borderRadius: '4px' }}>
+                            {typeof error === 'object' ? JSON.stringify(error, null, 2) : error}
+                        </div>
+                        <div style={{ marginTop: '10px', fontSize: '0.8rem' }}>
+                            If you see "policy violation", please ask the developer to run the database migration scripts.
+                        </div>
                     </div>
                 )}
 

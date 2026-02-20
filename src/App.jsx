@@ -907,7 +907,7 @@ const SupplierDashboard = ({
                       </span>
                     </div>
                     <div style={{ fontSize: "0.85rem", color: "#666" }}>
-                      From: {iq.profiles?.full_name} ({iq.profiles?.email})
+                      From: {iq.buyer?.full_name} ({iq.buyer?.email})
                     </div>
                     <div
                       style={{
@@ -932,7 +932,7 @@ const SupplierDashboard = ({
                         <option value="completed">Completed</option>
                       </select>
                       <a
-                        href={`mailto:${iq.profiles?.email}`}
+                        href={`mailto:${iq.buyer?.email}`}
                         className="btn"
                         style={{
                           padding: "4px 10px",
@@ -1398,7 +1398,7 @@ const App = () => {
       // Fetch Inquiries with details
       const { data: inquiryData, count: inquiryCount } = await supabase
         .from("inquiries")
-        .select("*, products(name), profiles(full_name, email)", {
+        .select("*, products(name), buyer:profiles!inquiries_buyer_id_fkey(full_name, email)", {
           count: "exact",
         })
         .eq("supplier_id", session.user.id)

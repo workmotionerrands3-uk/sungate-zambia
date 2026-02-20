@@ -1,10 +1,10 @@
 import React from 'react'
 import { X, Trash2, ShoppingBag, ArrowRight } from 'lucide-react'
 
-const CartDrawer = ({ isOpen, onClose, items, onRemove, onNotify }) => {
+const CartDrawer = ({ isOpen, onClose, items, onRemove, onNotify, onQuoteRequest }) => {
     const total = items.reduce((sum, item) => {
         // Extract numeric price from string like "K5,500" or "K12,000"
-        const numPrice = parseInt(item.price.replace(/[^0-9]/g, ''))
+        const numPrice = parseInt(item.price.toString().replace(/[^0-9]/g, ''))
         return sum + numPrice
     }, 0)
 
@@ -86,7 +86,7 @@ const CartDrawer = ({ isOpen, onClose, items, onRemove, onNotify }) => {
                             <span style={{ fontWeight: 800, color: 'var(--trust-blue)' }}>K{total.toLocaleString()}</span>
                         </div>
                         <button
-                            onClick={() => onNotify("Checkout process is coming soon! Our team will contact you for payment details.", "success")}
+                            onClick={() => onQuoteRequest(items)}
                             className="btn btn-primary"
                             style={{ width: '100%', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                         >

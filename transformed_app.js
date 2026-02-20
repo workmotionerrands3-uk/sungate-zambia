@@ -1230,7 +1230,7 @@ const App = () => {
     if (!session || profile?.role !== "supplier") return;
     try {
       const { data: productData, count: listingCount } = await supabase.from("products").select("*", { count: "exact" }).eq("supplier_id", session.user.id).order("created_at", { ascending: false });
-      const { data: inquiryData, count: inquiryCount } = await supabase.from("inquiries").select("*, products(name), profiles(full_name, email)", { count: "exact" }).eq("supplier_id", session.user.id).order("created_at", { ascending: false });
+      const { data: inquiryData, count: inquiryCount } = await supabase.from("inquiries").select("*, products(name), buyer:profiles!buyer_id(full_name, email)", { count: "exact" }).eq("supplier_id", session.user.id).order("created_at", { ascending: false });
       setSupplierStats({
         listings: listingCount || 0,
         inquiries: inquiryCount || 0

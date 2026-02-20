@@ -38,7 +38,7 @@ const QuoteRequestPrint = () => {
 
                 const { data, error } = await supabase
                     .from('inquiries')
-                    .select('*, products(*), profiles(*)')
+                    .select('*, products(*), buyer:profiles!inquiries_buyer_id_fkey(*)')
                     .eq('id', id)
                     .single()
 
