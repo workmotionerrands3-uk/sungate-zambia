@@ -31,11 +31,260 @@ import AuthForm from "./components/AuthForm.jsx";
 import CartDrawer from "./components/CartDrawer.jsx";
 import AdminDashboard from "./components/AdminDashboard.jsx";
 import AddProductModal from "./components/AddProductModal.jsx";
+import PartnerOnboarding from "./components/PartnerOnboarding.jsx";
 import {
   TermsPage,
   PrivacyPolicyPage,
   HelpCenterPage,
 } from "./components/LegalPages.jsx";
+
+const Footer = ({ openAuthWithRole }) => (
+  <footer
+    style={{
+      background: "#1a1a1a",
+      color: "#e0e0e0",
+      padding: "80px 0 40px",
+    }}
+  >
+    <div className="container">
+      <div className="grid grid-4" style={{ marginBottom: "60px" }}>
+        <div style={{ gridColumn: "span 1" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              fontWeight: 800,
+              fontSize: "1.5rem",
+              marginBottom: "24px",
+              color: "white",
+            }}
+          >
+            <Sun
+              size={32}
+              color="var(--sun-orange)"
+              fill="var(--sun-gold)"
+            />
+            <span>SunGate</span>
+          </div>
+          <p
+            style={{ color: "#888", lineHeight: 1.6, marginBottom: "24px" }}
+          >
+            Zambia's premier marketplace for solar energy solutions.
+            Connecting functionality with sustainability.
+          </p>
+          <div style={{ display: "flex", gap: "16px" }}>
+            <div
+              style={{
+                width: "36px",
+                height: "36px",
+                background: "#333",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MessageCircle size={18} />
+            </div>
+            <div
+              style={{
+                width: "36px",
+                height: "36px",
+                background: "#333",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Phone size={18} />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4
+            style={{
+              color: "white",
+              marginBottom: "24px",
+              fontSize: "1.1rem",
+            }}
+          >
+            Sitemap
+          </h4>
+          <ul
+            style={{
+              listStyle: "none",
+              padding: 0,
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+            }}
+          >
+            <li>
+              <a
+                href="/partners"
+                style={{ color: "#aaa", textDecoration: "none" }}
+              >
+                Become a Partner
+              </a>
+            </li>
+            <li>
+              <a
+                href="#marketplace"
+                style={{ color: "#aaa", textDecoration: "none" }}
+              >
+                Marketplace
+              </a>
+            </li>
+            <li>
+              <a
+                href="#installers"
+                style={{ color: "#aaa", textDecoration: "none" }}
+              >
+                Find Installer
+              </a>
+            </li>
+            <li>
+              <a
+                href="#blog"
+                style={{ color: "#aaa", textDecoration: "none" }}
+              >
+                Energy Tips
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h4
+            style={{
+              color: "white",
+              marginBottom: "24px",
+              fontSize: "1.1rem",
+            }}
+          >
+            Support
+          </h4>
+          <ul
+            style={{
+              listStyle: "none",
+              padding: 0,
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+            }}
+          >
+            <li>
+              <a
+                href="/help"
+                style={{ color: "#aaa", textDecoration: "none" }}
+              >
+                Help Center
+              </a>
+            </li>
+            <li>
+              <button 
+                onClick={() => openAuthWithRole('supplier')} 
+                style={{ background: 'none', border: 'none', color: "#aaa", textDecoration: "none", cursor: 'pointer', padding: 0 }}
+              >
+                Supplier Login
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => openAuthWithRole('installer')} 
+                style={{ background: 'none', border: 'none', color: "#aaa", textDecoration: "none", cursor: 'pointer', padding: 0 }}
+              >
+                Installer Registration
+              </button>
+            </li>
+            <li>
+              <a
+                href="/help"
+                style={{ color: "#aaa", textDecoration: "none" }}
+              >
+                Contact Us
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h4
+            style={{
+              color: "white",
+              marginBottom: "24px",
+              fontSize: "1.1rem",
+            }}
+          >
+            Contact
+          </h4>
+          <ul
+            style={{
+              listStyle: "none",
+              padding: 0,
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+            }}
+          >
+            <li style={{ display: "flex", gap: "12px", color: "#aaa" }}>
+              <MapPin size={20} color="var(--sun-orange)" />
+              <span>
+                Lusaka, Zambia
+                <br />
+                Great East Road
+              </span>
+            </li>
+            <li style={{ display: "flex", gap: "12px", color: "#aaa" }}>
+              <Phone size={20} color="var(--sun-orange)" />
+              <span>0974300472</span>
+            </li>
+            <li style={{ display: "flex", gap: "12px", color: "#aaa" }}>
+              <MessageCircle size={20} color="var(--sun-orange)" />
+              <span>support@sungate.co.zm</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        style={{
+          paddingTop: "30px",
+          borderTop: "1px solid #333",
+          textAlign: "center",
+          fontSize: "0.85rem",
+          color: "#666",
+          display: "flex",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "20px",
+        }}
+      >
+        <span>&copy; 2026 SunGate Zambia. All rights reserved.</span>
+        <div style={{ display: "flex", gap: "24px" }}>
+          <a
+            href="/privacy"
+            style={{ color: "#666", textDecoration: "none" }}
+          >
+            Privacy Policy
+          </a>
+          <a
+            href="/terms"
+            style={{ color: "#666", textDecoration: "none" }}
+          >
+            Terms & Conditions
+          </a>
+          <a href="#" style={{ color: "#666", textDecoration: "none" }}>
+            Sitemap
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+);
 
 const Navbar = ({
   session,
@@ -104,6 +353,12 @@ const Navbar = ({
           </a>
           <a href="#blog" style={{ fontWeight: 600, fontSize: "0.95rem" }}>
             Knowledge
+          </a>
+          <a
+            href="/partners"
+            style={{ fontWeight: 600, fontSize: "0.95rem", color: 'var(--trust-blue)' }}
+          >
+            Partners
           </a>
         </div>
 
@@ -249,6 +504,13 @@ const Navbar = ({
               style={{ fontSize: "1.1rem", fontWeight: 600 }}
             >
               Knowledge Hub
+            </a>
+            <a
+              href="/partners"
+              onClick={() => setIsOpen(false)}
+              style={{ fontSize: "1.1rem", fontWeight: 600, color: 'var(--trust-blue)' }}
+            >
+              Become a Partner
             </a>
             {!session && (
               <button
@@ -1046,6 +1308,7 @@ const App = () => {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
+  const [initialAuthRole, setInitialAuthRole] = useState('user');
   const [notification, setNotification] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
@@ -1073,6 +1336,29 @@ const App = () => {
   if (location.pathname === "/terms") return <TermsPage />;
   if (location.pathname === "/privacy") return <PrivacyPolicyPage />;
   if (location.pathname === "/help") return <HelpCenterPage />;
+  if (location.pathname === "/partners") {
+    return (
+      <div className="App">
+        <Navbar 
+          session={session} 
+          profile={profile} 
+          onAuthClick={() => openAuthWithRole('user')} 
+          onLogout={handleLogout}
+          cartCount={cartItems.length}
+          onCartClick={() => setIsCartOpen(true)}
+        />
+        <PartnerOnboarding onMemberClick={openAuthWithRole} />
+        {showAuth && (
+          <AuthForm 
+            onClose={() => setShowAuth(false)} 
+            onAuthComplete={() => setShowAuth(false)}
+            initialRole={initialAuthRole}
+          />
+        )}
+        <Footer openAuthWithRole={openAuthWithRole} />
+      </div>
+    );
+  }
 
   // Handle Cart Persistence and Isolation
   useEffect(() => {
@@ -1441,6 +1727,11 @@ const App = () => {
       fetchUserData();
     }
   }, [session, profile, refreshTrigger]);
+
+  const openAuthWithRole = (role) => {
+    setInitialAuthRole(role);
+    setShowAuth(true);
+  };
 
   const notify = (message, type = "success") => {
     setNotification({ message, type });
@@ -2067,246 +2358,7 @@ const App = () => {
         </div>
       </main>
 
-      <footer
-        style={{
-          background: "#1a1a1a",
-          color: "#e0e0e0",
-          padding: "80px 0 40px",
-        }}
-      >
-        <div className="container">
-          <div className="grid grid-4" style={{ marginBottom: "60px" }}>
-            <div style={{ gridColumn: "span 1" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  fontWeight: 800,
-                  fontSize: "1.5rem",
-                  marginBottom: "24px",
-                  color: "white",
-                }}
-              >
-                <Sun
-                  size={32}
-                  color="var(--sun-orange)"
-                  fill="var(--sun-gold)"
-                />
-                <span>SunGate</span>
-              </div>
-              <p
-                style={{ color: "#888", lineHeight: 1.6, marginBottom: "24px" }}
-              >
-                Zambia's premier marketplace for solar energy solutions.
-                Connecting functionality with sustainability.
-              </p>
-              <div style={{ display: "flex", gap: "16px" }}>
-                {/* Social placeholders */}
-                <div
-                  style={{
-                    width: "36px",
-                    height: "36px",
-                    background: "#333",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MessageCircle size={18} />
-                </div>
-                <div
-                  style={{
-                    width: "36px",
-                    height: "36px",
-                    background: "#333",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Phone size={18} />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4
-                style={{
-                  color: "white",
-                  marginBottom: "24px",
-                  fontSize: "1.1rem",
-                }}
-              >
-                Sitemap
-              </h4>
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                }}
-              >
-                <li>
-                  <a
-                    href="#calculator"
-                    style={{ color: "#aaa", textDecoration: "none" }}
-                  >
-                    Solar Calculator
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#marketplace"
-                    style={{ color: "#aaa", textDecoration: "none" }}
-                  >
-                    Marketplace
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#installers"
-                    style={{ color: "#aaa", textDecoration: "none" }}
-                  >
-                    Find Installer
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#blog"
-                    style={{ color: "#aaa", textDecoration: "none" }}
-                  >
-                    Energy Tips
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4
-                style={{
-                  color: "white",
-                  marginBottom: "24px",
-                  fontSize: "1.1rem",
-                }}
-              >
-                Support
-              </h4>
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                }}
-              >
-                <li>
-                  <a
-                    href="/help"
-                    style={{ color: "#aaa", textDecoration: "none" }}
-                  >
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="#" style={{ color: "#aaa", textDecoration: "none" }}>
-                    Supplier Login
-                  </a>
-                </li>
-                <li>
-                  <a href="#" style={{ color: "#aaa", textDecoration: "none" }}>
-                    Installer Registration
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/help"
-                    style={{ color: "#aaa", textDecoration: "none" }}
-                  >
-                    Contact Us
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4
-                style={{
-                  color: "white",
-                  marginBottom: "24px",
-                  fontSize: "1.1rem",
-                }}
-              >
-                Contact
-              </h4>
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                }}
-              >
-                <li style={{ display: "flex", gap: "12px", color: "#aaa" }}>
-                  <MapPin size={20} color="var(--sun-orange)" />
-                  <span>
-                    Lusaka, Zambia
-                    <br />
-                    Great East Road
-                  </span>
-                </li>
-                <li style={{ display: "flex", gap: "12px", color: "#aaa" }}>
-                  <Phone size={20} color="var(--sun-orange)" />
-                  <span>0974300472</span>
-                </li>
-                <li style={{ display: "flex", gap: "12px", color: "#aaa" }}>
-                  <MessageCircle size={20} color="var(--sun-orange)" />
-                  <span>support@sungate.co.zm</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div
-            style={{
-              paddingTop: "30px",
-              borderTop: "1px solid #333",
-              textAlign: "center",
-              fontSize: "0.85rem",
-              color: "#666",
-              display: "flex",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "20px",
-            }}
-          >
-            <span>&copy; 2026 SunGate Zambia. All rights reserved.</span>
-            <div style={{ display: "flex", gap: "24px" }}>
-              <a
-                href="/privacy"
-                style={{ color: "#666", textDecoration: "none" }}
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="/terms"
-                style={{ color: "#666", textDecoration: "none" }}
-              >
-                Terms & Conditions
-              </a>
-              <a href="#" style={{ color: "#666", textDecoration: "none" }}>
-                Sitemap
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer openAuthWithRole={openAuthWithRole} />
     </div>
   );
 };

@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { LogIn, UserPlus, Mail, Lock, User, Building, ArrowRight, ShieldCheck, X, Sun } from 'lucide-react'
 
-const AuthForm = ({ onClose, onAuthComplete, isFullPage = false, isUpdatePassword = false }) => {
+const AuthForm = ({ onClose, onAuthComplete, isFullPage = false, isUpdatePassword = false, initialRole = 'user' }) => {
     const [isLogin, setIsLogin] = useState(!isUpdatePassword)
     const [isForgotPassword, setIsForgotPassword] = useState(false)
-    const [role, setRole] = useState('user') // 'user' or 'supplier'
+    const [role, setRole] = useState(initialRole) // 'user', 'supplier', or 'installer'
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [fullName, setFullName] = useState('')
@@ -132,6 +132,18 @@ const AuthForm = ({ onClose, onAuthComplete, isFullPage = false, isUpdatePasswor
                                 }}
                             >
                                 <User size={14} style={{ marginRight: '6px' }} /> Customer
+                            </button>
+                            <button
+                                onClick={() => setRole('installer')}
+                                style={{
+                                    flex: 1, padding: '10px', borderRadius: '8px', border: 'none',
+                                    background: role === 'installer' ? 'white' : 'transparent',
+                                    color: role === 'installer' ? 'var(--trust-blue)' : '#666',
+                                    fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
+                                    boxShadow: role === 'installer' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none'
+                                }}
+                            >
+                                <Award size={14} style={{ marginRight: '6px' }} /> Installer
                             </button>
                             <button
                                 onClick={() => setRole('supplier')}
