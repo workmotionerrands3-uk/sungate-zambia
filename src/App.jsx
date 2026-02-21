@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Routes, Route, useNavigate, useSearchParams } from "react-router-dom";
 import QuoteRequestPrint from "./components/QuoteRequestPrint.jsx";
 import {
   Sun,
@@ -37,6 +37,14 @@ import {
   PrivacyPolicyPage,
   HelpCenterPage,
 } from "./components/LegalPages.jsx";
+
+// Marketing Components
+import LandingPage from "./components/marketing/LandingPage.jsx";
+import PublicNavbar from "./components/marketing/PublicNavbar.jsx";
+import PublicCalculator from "./components/marketing/PublicCalculator.jsx";
+import PartnerLanding from "./components/marketing/PartnerLanding.jsx";
+import Blog from "./components/marketing/Blog.jsx";
+import MarketingFooter from "./components/marketing/MarketingFooter.jsx";
 
 const Footer = ({ openAuthWithRole }) => (
   <footer
@@ -1329,35 +1337,65 @@ const App = () => {
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Helper to trigger auth
+  const openAuthWithRole = (role) => {
+    setInitialAuthRole(role);
+    setShowAuth(true);
+  };
 
   if (location.pathname.startsWith("/print-quote/")) {
     return <QuoteRequestPrint />;
   }
-  if (location.pathname === "/terms") return <TermsPage />;
-  if (location.pathname === "/privacy") return <PrivacyPolicyPage />;
-  if (location.pathname === "/help") return <HelpCenterPage />;
-  if (location.pathname === "/partners" || location.pathname === "/partners/") {
+
+  // Define public routes
+  const isPublicRoute = 
+    location.pathname === "/" || 
+    location.pathname === "/calculator" || 
+    location.pathname === "/partners" || 
+    location.pathname === "/blog" || 
+    location.pathname === "/terms" || 
+    location.pathname === "/privacy" || 
+    location.pathname === "/help";
+
+  const renderPublicPage = () => {
+    const type = searchParams.get('type') || 'installer';
+    
     return (
-      <div className="App">
-        <Navbar 
-          session={session} 
-          profile={profile} 
-          onAuthClick={() => openAuthWithRole('user')} 
-          onLogout={handleLogout}
-          cartCount={cartItems.length}
-          onCartClick={() => setIsCartOpen(true)}
-        />
-        <PartnerOnboarding onMemberClick={openAuthWithRole} />
+      <div className="public-app">
+        <PublicNavbar onAuthClick={openAuthWithRole} />
+        <Routes>
+          <Route path="/" element={<LandingPage onAuthClick={openAuthWithRole} />} />
+          <Route path="/calculator" element={<PublicCalculator onAuthClick={openAuthWithRole} />} />
+          <Route path="/partners" element={<PartnerLanding type={type} onAuthClick={openAuthWithRole} />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/help" element={<HelpCenterPage />} />
+        </Routes>
         {showAuth && (
           <AuthForm 
             onClose={() => setShowAuth(false)} 
-            onAuthComplete={() => setShowAuth(false)}
+            onAuthComplete={() => {
+              setShowAuth(false);
+              navigate('/dashboard');
+            }}
             initialRole={initialAuthRole}
           />
         )}
-        <Footer openAuthWithRole={openAuthWithRole} />
       </div>
     );
+  };
+
+  if (isPublicRoute && !session) {
+    return renderPublicPage();
+  }
+
+  // Redirect to landing if not logged in and on a private route
+  if (!session && !isPublicRoute) {
+    return renderPublicPage(); // Fallback to public pages
   }
 
   // Handle Cart Persistence and Isolation
@@ -1821,10 +1859,6 @@ const App = () => {
     );
   }
 
-  if (!session) {
-    return <AuthForm isFullPage={true} />;
-  }
-
   return (
     <div className="app">
       <Navbar
@@ -1878,33 +1912,54 @@ const App = () => {
         </div>
       )}
 
-      {profile?.role === "admin" && <AdminPanel profile={profile} />}
-      {profile?.role === "supplier" && (
-        <SupplierDashboard
-          profile={profile}
-          onAddProduct={() => setShowAddProduct(true)}
-          stats={supplierStats}
-          inquiries={supplierInquiries}
-          products={supplierProducts}
-          onUpdateInquiryStatus={updateInquiryStatus}
-          onDeleteProduct={deleteProduct}
-        />
-      )}
-      {profile?.role === "admin" && session && (
-        <AdminDashboard profile={profile} />
-      )}
-      {profile?.role === "user" && session && (
-        <UserDashboard
-          profile={profile}
-          savedProducts={userSavedProducts}
-          calcHistory={userCalcHistory}
-          userInquiries={userInquiries}
-          onRemoveSaved={removeSavedProduct}
-          onDeleteHistory={deleteCalculatorResult}
-          setPdfUrl={setPdfUrl}
-          setShowPdfModal={setShowPdfModal}
-        />
-      )}
+      <main>
+        {profile?.role === "admin" && <AdminDashboard profile={profile} />}
+        {profile?.role === "supplier" && (
+          <SupplierDashboard
+            profile={profile}
+            onAddProduct={() => setShowAddProduct(true)}
+            stats={supplierStats}
+            inquiries={supplierInquiries}
+            products={supplierProducts}
+            onUpdateInquiryStatus={updateInquiryStatus}
+            onDeleteProduct={deleteProduct}
+          />
+        )}
+        {profile?.role === "user" && (
+          <>
+            <UserDashboard
+              profile={profile}
+              savedProducts={userSavedProducts}
+              calcHistory={userCalcHistory}
+              userInquiries={userInquiries}
+              onRemoveSaved={removeSavedProduct}
+              onDeleteHistory={deleteCalculatorResult}
+              setPdfUrl={setPdfUrl}
+              setShowPdfModal={setShowPdfModal}
+            />
+            <div id="calculator">
+              <SolarCalculator onSaveResult={saveCalculatorResult} />
+            </div>
+            <div id="marketplace">
+              <Marketplace
+                session={session}
+                profile={profile}
+                onNotify={notify}
+                onAddToCart={addToCart}
+                refreshTrigger={refreshTrigger}
+                savedProductIds={userSavedProducts.map((sp) => sp.product_id)}
+                onToggleSave={toggleSaveProduct}
+              />
+            </div>
+            <div id="installers">
+              <InstallerDirectory onNotify={notify} />
+            </div>
+            <div id="blog">
+              <KnowledgeHub />
+            </div>
+          </>
+        )}
+      </main>
 
       <AddProductModal
         isOpen={showAddProduct}
@@ -1986,377 +2041,6 @@ const App = () => {
           </div>
         </div>
       )}
-
-      {/* Hero Section */}
-      <header
-        style={{
-          position: "relative",
-          padding: "120px 0",
-          background:
-            'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/assets/hero.jpg")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          color: "white",
-          textAlign: "center",
-        }}
-      >
-        <div className="container" style={{ position: "relative", zIndex: 2 }}>
-          <div
-            className="badge badge-verified"
-            style={{
-              marginBottom: "24px",
-              background: "rgba(255,255,255,0.2)",
-              color: "white",
-              border: "1px solid rgba(255,255,255,0.4)",
-              display: "inline-flex",
-              alignItems: "center",
-            }}
-          >
-            <ShieldCheck
-              size={16}
-              style={{ marginRight: "8px", color: "var(--sun-gold)" }}
-            />
-            #1 Trusted Solar Marketplace in Zambia
-          </div>
-          <h1
-            style={{
-              fontSize: "clamp(3rem, 6vw, 4.5rem)",
-              fontWeight: 800,
-              marginBottom: "24px",
-              lineHeight: 1.1,
-              textShadow: "0 4px 20px rgba(0,0,0,0.3)",
-            }}
-          >
-            Power Your Life. <br />
-            <span style={{ color: "var(--sun-gold)" }}>End Load-Shedding.</span>
-          </h1>
-          <p
-            style={{
-              fontSize: "1.25rem",
-              color: "#f0f0f0",
-              marginBottom: "48px",
-              maxWidth: "700px",
-              margin: "0 auto 48px",
-              lineHeight: 1.6,
-            }}
-          >
-            Compare prices on batteries & inverters, find certified installers,
-            and get a custom solar quote in minutes.
-          </p>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              gap: "16px",
-            }}
-          >
-            <a
-              href="#marketplace"
-              className="btn btn-primary"
-              style={{ padding: "16px 32px", fontSize: "1.1rem" }}
-            >
-              <ShoppingCart size={20} style={{ marginRight: "8px" }} />
-              Shop Solar Products
-            </a>
-            <a
-              href="#installers"
-              className="btn"
-              style={{
-                background: "white",
-                color: "var(--trust-blue)",
-                padding: "16px 32px",
-                fontSize: "1.1rem",
-                fontWeight: 700,
-              }}
-            >
-              <User size={20} style={{ marginRight: "8px" }} />
-              Find an Installer
-            </a>
-          </div>
-        </div>
-      </header>
-
-      {/* How It Works Section */}
-      <section style={{ padding: "80px 0", background: "white" }}>
-        <div className="container">
-          <div className="text-center" style={{ marginBottom: "60px" }}>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                color: "var(--trust-blue)",
-                marginBottom: "16px",
-              }}
-            >
-              How SunGate Works
-            </h2>
-            <p style={{ color: "var(--text-muted)", fontSize: "1.1rem" }}>
-              Get verified solar power in 3 simple steps
-            </p>
-          </div>
-          <div className="grid grid-3">
-            <div
-              style={{
-                textAlign: "center",
-                padding: "30px",
-                background: "#f8f9fa",
-                borderRadius: "20px",
-              }}
-            >
-              <div
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  background: "var(--sky-blue)",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 24px",
-                }}
-              >
-                <Calculator size={40} color="var(--trust-blue)" />
-              </div>
-              <h3 style={{ marginBottom: "16px", fontSize: "1.5rem" }}>
-                1. Calculate Needs
-              </h3>
-              <p style={{ color: "var(--text-muted)" }}>
-                Use our smart calculator to properly size your inverter and
-                battery needs based on your appliances.
-              </p>
-            </div>
-            <div
-              style={{
-                textAlign: "center",
-                padding: "30px",
-                background: "#fff8e1",
-                borderRadius: "20px",
-              }}
-            >
-              <div
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  background: "#ffe082",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 24px",
-                }}
-              >
-                <ShoppingCart size={40} color="#ff6f00" />
-              </div>
-              <h3 style={{ marginBottom: "16px", fontSize: "1.5rem" }}>
-                2. Shop Marketplace
-              </h3>
-              <p style={{ color: "var(--text-muted)" }}>
-                Compare prices from vetted Zambian suppliers. Buy panels,
-                batteries, and inverters directly.
-              </p>
-            </div>
-            <div
-              style={{
-                textAlign: "center",
-                padding: "30px",
-                background: "#e8f5e9",
-                borderRadius: "20px",
-              }}
-            >
-              <div
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  background: "#a5d6a7",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 24px",
-                }}
-              >
-                <User size={40} color="#2e7d32" />
-              </div>
-              <h3 style={{ marginBottom: "16px", fontSize: "1.5rem" }}>
-                3. Hire Installer
-              </h3>
-              <p style={{ color: "var(--text-muted)" }}>
-                Connect with ERB-certified installers to safely set up your
-                system and ensure valid warranties.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <main>
-        <div id="calculator">
-          <SolarCalculator onSaveResult={saveCalculatorResult} />
-        </div>
-
-        {/* Why Choose Us Section */}
-        <section
-          style={{
-            padding: "80px 0",
-            background: "var(--trust-blue)",
-            color: "white",
-          }}
-        >
-          <div className="container">
-            <div
-              className="grid grid-2"
-              style={{ alignItems: "center", gap: "60px" }}
-            >
-              <div>
-                <h2 style={{ fontSize: "2.5rem", marginBottom: "24px" }}>
-                  Why Zambia Trusts SunGate
-                </h2>
-                <p
-                  style={{
-                    fontSize: "1.1rem",
-                    opacity: 0.9,
-                    marginBottom: "40px",
-                    lineHeight: 1.8,
-                  }}
-                >
-                  The solar market is flooded with fakes and unqualified
-                  technicians. SunGate is the only platform that validates every
-                  product and installer.
-                </p>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "20px",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "16px",
-                    }}
-                  >
-                    <ShieldCheck size={28} color="var(--sun-gold)" />
-                    <div>
-                      <h4 style={{ fontSize: "1.2rem", marginBottom: "4px" }}>
-                        Verified Suppliers Only
-                      </h4>
-                      <p style={{ fontSize: "0.9rem", opacity: 0.8 }}>
-                        We check TPINs and physical addresses.
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "16px",
-                    }}
-                  >
-                    <Award size={28} color="var(--sun-gold)" />
-                    <div>
-                      <h4 style={{ fontSize: "1.2rem", marginBottom: "4px" }}>
-                        ERB Certified Installers
-                      </h4>
-                      <p style={{ fontSize: "0.9rem", opacity: 0.8 }}>
-                        Technicians with proven track records.
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "16px",
-                    }}
-                  >
-                    <Heart size={28} color="var(--sun-gold)" />
-                    <div>
-                      <h4 style={{ fontSize: "1.2rem", marginBottom: "4px" }}>
-                        Buyer Protection
-                      </h4>
-                      <p style={{ fontSize: "0.9rem", opacity: 0.8 }}>
-                        Secure payments and dispute resolution.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                style={{
-                  background: "white",
-                  padding: "40px",
-                  borderRadius: "24px",
-                  color: "var(--text-dark)",
-                }}
-              >
-                <div
-                  style={{
-                    textAlign: "center",
-                    paddingBottom: "30px",
-                    borderBottom: "1px solid #eee",
-                    marginBottom: "30px",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "4rem",
-                      fontWeight: 800,
-                      color: "var(--trust-blue)",
-                    }}
-                  >
-                    500+
-                  </div>
-                  <p style={{ color: "#666" }}>Happy Families Powered</p>
-                </div>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "20px",
-                  }}
-                >
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "2.5rem", fontWeight: 700 }}>
-                      50+
-                    </div>
-                    <p style={{ fontSize: "0.85rem", color: "#666" }}>
-                      Verified Suppliers
-                    </p>
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "2.5rem", fontWeight: 700 }}>
-                      2M
-                    </div>
-                    <p style={{ fontSize: "0.85rem", color: "#666" }}>
-                      Watts Installed
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div id="marketplace">
-          <Marketplace
-            session={session}
-            profile={profile}
-            onNotify={notify}
-            onAddToCart={addToCart}
-            refreshTrigger={refreshTrigger}
-            savedProductIds={userSavedProducts.map((sp) => sp.product_id)}
-            onToggleSave={toggleSaveProduct}
-          />
-        </div>
-        <div id="installers">
-          <InstallerDirectory onNotify={notify} />
-        </div>
-        <div id="blog">
-          <KnowledgeHub />
-        </div>
-      </main>
 
       <Footer openAuthWithRole={openAuthWithRole} />
     </div>
