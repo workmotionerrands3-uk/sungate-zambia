@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Target, Users, Medal, Wallet, Zap, ShieldCheck, ArrowRight, Check } from 'lucide-react';
 
 const PricingTier = ({ name, price, features, highlighted, onSignup }) => (
@@ -53,7 +54,11 @@ const PricingTier = ({ name, price, features, highlighted, onSignup }) => (
   </div>
 );
 
-const PartnerLanding = ({ type = 'installer', onAuthClick }) => {
+const PartnerLanding = ({ type: propsType, onAuthClick }) => {
+  const [searchParams] = useSearchParams();
+  const typeFromQuery = searchParams.get('type');
+  const type = typeFromQuery || propsType || 'installer';
+  
   const isInstaller = type === 'installer';
   
   const benefits = isInstaller ? [
