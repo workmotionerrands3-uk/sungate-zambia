@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { LogIn, UserPlus, Mail, Lock, User, Building, ArrowRight, ShieldCheck, X, Sun } from 'lucide-react'
+import { LogIn, UserPlus, Mail, Lock, User, Building, ArrowRight, ShieldCheck, X, Sun, Award } from 'lucide-react'
 
 const AuthForm = ({ onClose, onAuthComplete, isFullPage = false, isUpdatePassword = false, initialRole = 'user' }) => {
     const [isLogin, setIsLogin] = useState(!isUpdatePassword)

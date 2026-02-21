@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowRight, ShieldCheck, TrendingUp, Users, Building, Tool, CheckCircle, Store, Zap } from 'lucide-react'
+import { ArrowRight, ShieldCheck, TrendingUp, Users, Building, Wrench, CheckCircle, Store, Zap } from 'lucide-react'
 
 const PartnerOnboarding = ({ onMemberClick }) => {
     return (
