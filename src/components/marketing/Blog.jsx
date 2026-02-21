@@ -1,10 +1,15 @@
-import React from 'react';
-import { Search, Filter, BookOpen, Clock, User, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, BookOpen, Clock, User, ArrowRight, X, ShieldCheck } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
-const BlogCard = ({ category, title, excerpt, image, date, author }) => (
-  <div style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid #eee', transition: 'transform 0.3s ease' }} className="blog-card">
+const BlogCard = ({ category, title, excerpt, image, date, author, onClick }) => (
+  <div 
+    onClick={onClick}
+    style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid #eee', transition: 'transform 0.3s ease', display: 'flex', flexDirection: 'column', cursor: 'pointer' }} 
+    className="blog-card"
+  >
     <div style={{ height: '240px', position: 'relative' }}>
-        <img src={image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={title} />
+        <img src={image || 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=400'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={title} />
         <div style={{ 
           position: 'absolute', 
           top: '20px', 
@@ -20,7 +25,7 @@ const BlogCard = ({ category, title, excerpt, image, date, author }) => (
           {category}
         </div>
     </div>
-    <div style={{ padding: '30px' }}>
+    <div style={{ padding: '30px', flex: 1, display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', gap: '16px', fontSize: '0.8rem', color: '#999', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={14} /> {date}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><User size={14} /> {author}</div>
@@ -36,7 +41,8 @@ const BlogCard = ({ category, title, excerpt, image, date, author }) => (
         alignItems: 'center', 
         gap: '8px',
         padding: 0,
-        cursor: 'pointer'
+        cursor: 'pointer',
+        marginTop: 'auto'
       }}>
         Read Article <ArrowRight size={18} />
       </button>
@@ -51,58 +57,50 @@ const BlogCard = ({ category, title, excerpt, image, date, author }) => (
 );
 
 const Blog = () => {
-  const categories = ["All", "Buying Guides", "Maintenance", "Solar Tech", "Zombia Market"];
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedArticle, setSelectedArticle] = useState(null);
+
+  const categories = ["All", "Buying Guides", "Maintenance", "Solar Tech", "Zambia Market"];
   
-  const posts = [
-    {
-      category: "Buying Guides",
-      title: "How to Choose the Right Inverter for Your Home",
-      excerpt: "Not all inverters are equal. Learn the difference between pure sine wave and modified sine wave for Zambian appliances.",
-      image: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=400",
-      date: "Feb 15, 2026",
-      author: "Chilufya M."
-    },
-    {
-      category: "Zambia Market",
-      title: "Understanding Zambia's 0% Duty on Solar Hardware",
-      excerpt: "Save thousands on your installation by knowing which components qualify for government tax exemptions in 2026.",
-      image: "https://images.unsplash.com/photo-1466611653911-954ffea1127b?auto=format&fit=crop&q=80&w=400",
-      date: "Feb 10, 2026",
-      author: "SunGate Team"
-    },
-    {
-      category: "Maintenance",
-      title: "5 Tips to Make Your Solar Batteries Last Longer",
-      excerpt: "Simple habits that can extend your battery life by up to 3 years and protect your investment from load-shedding cycles.",
-      image: "https://images.unsplash.com/photo-1594818378822-9193288979be?auto=format&fit=crop&q=80&w=400",
-      date: "Feb 5, 2026",
-      author: "Joseph K."
-    },
-    {
-      category: "Solar Tech",
-      title: "Lithium vs Gel: Which Battery is Better for Load-Shedding?",
-      excerpt: "A deep dive into the pros and cons of different battery technologies in the Zambian climate.",
-      image: "https://images.unsplash.com/photo-1611367540803-0238d374431e?auto=format&fit=crop&q=80&w=400",
-      date: "Jan 28, 2026",
-      author: "Tech Corner"
-    },
-    {
-      category: "Buying Guides",
-      title: "Complete Solar Kit Pricing Guide for 2026",
-      excerpt: "Estimated costs for 3kW, 5kW, and 10kW systems including installation and certification fees.",
-      image: "https://images.unsplash.com/photo-1559302995-f0a1bc19e59d?auto=format&fit=crop&q=80&w=400",
-      date: "Jan 20, 2026",
-      author: "SunGate Team"
-    },
-    {
-      category: "Maintenance",
-      title: "Post-Installation Checklist: What Every Owner Must Know",
-      excerpt: "Ensure your warranty remains valid and your system performs at peak efficiency year-round.",
-      image: "https://images.unsplash.com/photo-1613665813446-82a78c468a1d?auto=format&fit=crop&q=80&w=400",
-      date: "Jan 12, 2026",
-      author: "Expert Advice"
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPosts(data || []);
+    } catch (err) {
+      console.error('Error fetching articles:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const calculateReadTime = (content) => {
+    if (!content) return '1 min';
+    const wordsPerMinute = 200;
+    const words = content.split(/\s+/).length;
+    return `${Math.ceil(words / wordsPerMinute)} min read`;
+  };
+
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = activeCategory === 'All' || post.category === activeCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div style={{ background: '#f8f9fa', minHeight: '100vh' }}>
@@ -128,15 +126,20 @@ const Blog = () => {
           }}>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {categories.map(cat => (
-                <button key={cat} style={{ 
-                  padding: '8px 20px', 
-                  borderRadius: '99px', 
-                  background: cat === 'All' ? 'var(--sun-orange)' : 'white',
-                  color: cat === 'All' ? 'white' : '#666',
-                  border: '1px solid #eee',
-                  fontWeight: 600,
-                  fontSize: '0.9rem'
-                }}>
+                <button 
+                  key={cat} 
+                  onClick={() => setActiveCategory(cat)}
+                  style={{ 
+                    padding: '8px 20px', 
+                    borderRadius: '99px', 
+                    background: activeCategory === cat ? 'var(--sun-orange)' : 'white',
+                    color: activeCategory === cat ? 'white' : '#666',
+                    border: '1px solid #eee',
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}>
                   {cat}
                 </button>
               ))}
@@ -146,6 +149,8 @@ const Blog = () => {
               <input 
                 type="text" 
                 placeholder="Search articles..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ 
                   width: '100%', 
                   padding: '12px 12px 12px 48px', 
@@ -162,19 +167,86 @@ const Blog = () => {
       {/* Grid */}
       <section style={{ padding: '80px 0' }}>
         <div className="container">
-          <div className="grid grid-3" style={{ gap: '40px' }}>
-            {posts.map((post, idx) => (
-              <BlogCard key={idx} {...post} />
-            ))}
-          </div>
-          
-          <div style={{ textAlign: 'center', marginTop: '60px' }}>
-            <button className="btn btn-secondary" style={{ padding: '16px 40px' }}>
-              Load More Articles
-            </button>
-          </div>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '60px 0' }}>
+              <div className="spinner"></div>
+              <p style={{ marginTop: '20px', color: '#666' }}>Fetching latest insights...</p>
+            </div>
+          ) : error ? (
+            <div style={{ textAlign: 'center', padding: '60px', background: '#fff0f0', borderRadius: '24px', color: '#d32f2f' }}>
+              <p><b>Error loading articles:</b> {error}</p>
+              <button onClick={fetchPosts} className="btn btn-secondary" style={{ marginTop: '16px' }}>Try Again</button>
+            </div>
+          ) : filteredPosts.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 0' }}>
+              <p style={{ color: '#666', fontSize: '1.1rem' }}>No articles found matching your criteria.</p>
+              <button onClick={() => { setSearchTerm(''); setActiveCategory('All'); }} className="btn btn-secondary" style={{ marginTop: '16px' }}>Clear Filters</button>
+            </div>
+          ) : (
+            <div className="grid grid-3" style={{ gap: '40px' }}>
+              {filteredPosts.map((post) => (
+                <BlogCard key={post.id} {...post} onClick={() => setSelectedArticle(post)} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
+
+      {/* Article Modal Reader */}
+      {selectedArticle && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000, padding: '20px' }}>
+          <div style={{ background: 'white', borderRadius: '24px', width: '100%', maxWidth: '900px', height: '90vh', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+            <button 
+              onClick={() => setSelectedArticle(null)}
+              style={{ position: 'absolute', top: '20px', right: '20px', background: 'white', border: 'none', borderRadius: '50%', padding: '10px', cursor: 'pointer', zIndex: 10, boxShadow: 'var(--shadow-lg)' }}
+            >
+              <X size={24} color="var(--trust-blue)" />
+            </button>
+
+            <div style={{ height: '400px', overflow: 'hidden', flexShrink: 0 }}>
+              <img src={selectedArticle.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={selectedArticle.title} />
+            </div>
+
+            <div style={{ padding: '40px', overflowY: 'auto', flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                <span style={{ padding: '6px 16px', background: 'var(--sky-blue)', color: 'var(--trust-blue)', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 800 }}>
+                  {selectedArticle.category}
+                </span>
+                <span style={{ fontSize: '0.9rem', color: '#888' }}>
+                  {selectedArticle.date} &bull; {calculateReadTime(selectedArticle.content)}
+                </span>
+              </div>
+
+              <h2 style={{ fontSize: '2.5rem', marginBottom: '24px', color: 'var(--trust-blue)', lineHeight: 1.2 }}>{selectedArticle.title}</h2>
+
+              <div style={{ color: '#333', lineHeight: '1.8', fontSize: '1.1rem' }}>
+                {selectedArticle.content ? (
+                  <div style={{ whiteSpace: 'pre-line' }}>
+                    {selectedArticle.content.split('\n\n').map((para, i) => (
+                      <p key={i} style={{ marginBottom: '20px' }}>{para}</p>
+                    ))}
+                  </div>
+                ) : (
+                  <p>Expert content for this article is being finalized. Please stay tuned for the full SunGate brief.</p>
+                )}
+              </div>
+
+              <div style={{ marginTop: '50px', padding: '30px', background: '#f8f9fa', borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+                  <User size={30} color="var(--trust-blue)" />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{selectedArticle.author}</div>
+                  <div style={{ fontSize: '0.9rem', color: '#777' }}>SunGate Zambia Content Expert</div>
+                </div>
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--zambia-green)', fontWeight: 700, fontSize: '0.9rem' }}>
+                  <ShieldCheck size={18} /> Fact Checked
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Newsletter */}
       <section style={{ padding: '80px 0', background: 'var(--trust-blue)', color: 'white' }}>

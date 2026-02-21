@@ -26,7 +26,6 @@ import { supabase } from "./lib/supabase";
 import SolarCalculator from "./components/SolarCalculator.jsx";
 import Marketplace from "./components/Marketplace.jsx";
 import InstallerDirectory from "./components/InstallerDirectory.jsx";
-import KnowledgeHub from "./components/KnowledgeHub.jsx";
 import AuthForm from "./components/AuthForm.jsx";
 import CartDrawer from "./components/CartDrawer.jsx";
 import AdminDashboard from "./components/AdminDashboard.jsx";
@@ -655,7 +654,7 @@ const App = () => {
                   <InstallerDirectory onNotify={notify} />
                 </div>
                 <div id="blog">
-                  <KnowledgeHub />
+                  <Blog />
                 </div>
               </>
             )
