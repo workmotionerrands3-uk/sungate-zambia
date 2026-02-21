@@ -6,7 +6,6 @@ import PublicCalculator from './PublicCalculator';
 import FeaturedInstallers from './FeaturedInstallers';
 import TrustBadges from './TrustBadges';
 import KnowledgeHubPreview from './KnowledgeHubPreview';
-import MarketingFooter from './MarketingFooter';
 
 const LandingPage = ({ onAuthClick }) => {
   const handleDashboardClick = () => onAuthClick('user');
@@ -22,7 +21,6 @@ const LandingPage = ({ onAuthClick }) => {
       </section>
       <FeaturedInstallers onAuthClick={onAuthClick} />
       <KnowledgeHubPreview />
-      <MarketingFooter onDashboardClick={handleDashboardClick} />
     </div>
   );
 };

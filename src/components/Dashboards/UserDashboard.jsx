@@ -28,7 +28,7 @@ const UserDashboard = ({
       >
         <div>
           <div className="badge badge-verified" style={{ marginBottom: "8px" }}>
-            Customer Command Center
+            {profile?.role === 'installer' ? 'Pro Partner Console' : 'Customer Command Center'}
           </div>
           <h2 style={{ fontSize: "2rem", margin: 0 }}>
             Welcome back, {profile?.full_name}!

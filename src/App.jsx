@@ -611,31 +611,34 @@ const App = () => {
           <Route path="/" element={
             !session ? (
               <LandingPage onAuthClick={openAuthWithRole} />
-            ) : profile?.role === "admin" ? (
-              <AdminDashboard profile={profile} />
-            ) : profile?.role === "supplier" ? (
-              <SupplierDashboard
-                profile={profile}
-                onAddProduct={() => setShowAddProduct(true)}
-                stats={supplierStats}
-                inquiries={supplierInquiries}
-                products={supplierProducts}
-                onUpdateInquiryStatus={updateInquiryStatus}
-                onDeleteProduct={deleteProduct}
-              />
             ) : (
-              // Standard User flow
               <>
-                <UserDashboard
-                  profile={profile}
-                  savedProducts={userSavedProducts}
-                  calcHistory={userCalcHistory}
-                  userInquiries={userInquiries}
-                  onRemoveSaved={removeSavedProduct}
-                  onDeleteHistory={deleteCalculatorResult}
-                  setPdfUrl={setPdfUrl}
-                  setShowPdfModal={setShowPdfModal}
-                />
+                {profile?.role === "admin" ? (
+                  <AdminDashboard profile={profile} />
+                ) : profile?.role === "supplier" ? (
+                  <SupplierDashboard
+                    profile={profile}
+                    onAddProduct={() => setShowAddProduct(true)}
+                    stats={supplierStats}
+                    inquiries={supplierInquiries}
+                    products={supplierProducts}
+                    onUpdateInquiryStatus={updateInquiryStatus}
+                    onDeleteProduct={deleteProduct}
+                  />
+                ) : (
+                  <UserDashboard
+                    profile={profile}
+                    savedProducts={userSavedProducts}
+                    calcHistory={userCalcHistory}
+                    userInquiries={userInquiries}
+                    onRemoveSaved={removeSavedProduct}
+                    onDeleteHistory={deleteCalculatorResult}
+                    setPdfUrl={setPdfUrl}
+                    setShowPdfModal={setShowPdfModal}
+                  />
+                )}
+                
+                {/* Shared utilities for all logged-in users */}
                 <div id="calculator">
                   <SolarCalculator onSaveResult={saveCalculatorResult} />
                 </div>

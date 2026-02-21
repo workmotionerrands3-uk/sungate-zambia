@@ -129,13 +129,27 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
 
 
     const filteredProducts = products.filter(p => {
-        // 1. Category Filter - Case-insensitive and trimmed
-        const matchesCategory = filter === 'All' || 
-            (p.category && p.category.toLowerCase().trim() === filter.toLowerCase().trim())
+        // 1. Category Filter - Enhanced matching with aliases
+        const normalize = (str) => (str || '').toLowerCase().trim();
+        const prodCat = normalize(p.category);
+        const filterCat = normalize(filter);
+
+        let matchesCategory = filter === 'All';
+        if (!matchesCategory) {
+            // Standard match
+            if (prodCat === filterCat) matchesCategory = true;
+            else {
+                // Alias matching
+                if (filterCat === 'solar panels' && (prodCat === 'panels' || prodCat === 'solar')) matchesCategory = true;
+                if (filterCat === 'water heaters' && (prodCat === 'geysers' || prodCat === 'heaters')) matchesCategory = true;
+                // Cross-check containment (e.g. "Kits" matches "Solar Kits")
+                if (prodCat.includes(filterCat) || filterCat.includes(prodCat)) matchesCategory = true;
+            }
+        }
 
         // 2. Search Filter
-        const matchesSearch = (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (p.category || '').toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesSearch = normalize(p.name).includes(normalize(searchQuery)) ||
+            normalize(p.category).includes(normalize(searchQuery))
 
         // 3. Price Filter
         let matchesPrice = true
