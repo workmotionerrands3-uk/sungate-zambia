@@ -23,6 +23,8 @@ const AdminDashboard = ({ profile }) => {
     const [productImagePreview, setProductImagePreview] = useState(null)
     const [articleImageFile, setArticleImageFile] = useState(null)
     const [articleImagePreview, setArticleImagePreview] = useState(null)
+    const [logoFile, setLogoFile] = useState(null)
+    const [logoPreview, setLogoPreview] = useState(null)
     const [settings, setSettings] = useState({ zesco_rate: 1.35, support_phone: '0974300472', commission_rate: 5 })
     const [pendingPartners, setPendingPartners] = useState([])
 
@@ -131,7 +133,10 @@ const AdminDashboard = ({ profile }) => {
             const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId)
             if (error) throw error
             logAdminAction('update_user_role', `Updated user ${userId} to ${newRole}`)
-            fetchData()
+            
+            // Immediately update local state for better UX
+            setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u))
+            
             alert('User role updated!')
         } catch (err) {
             alert('Error updating role: ' + err.message)
@@ -157,6 +162,20 @@ const AdminDashboard = ({ profile }) => {
         }
     }
 
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0]
+        if (file && file.type.startsWith('image/')) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image too large. Maximum size is 5MB.')
+                return
+            }
+            setLogoFile(file)
+            setLogoPreview(URL.createObjectURL(file))
+        } else {
+            alert('Please select an image file.')
+        }
+    }
+
     const handleSave = async () => {
         try {
             setLoading(true)
@@ -166,158 +185,54 @@ const AdminDashboard = ({ profile }) => {
             else if (activeTab === 'suppliers') table = 'suppliers'
             else if (activeTab === 'products') table = 'products'
             else if (activeTab === 'inquiries') table = 'inquiries'
-            else return // Should not happen
+            else if (activeTab === 'approvals') {
+                table = formData.company_name ? 'suppliers' : 'installers'
+            }
+            else return
 
-            let pdfUrl = formData.quote_pdf_url || null
-
-            // Upload PDF if admin is editing an inquiry and a file is selected
-            if (activeTab === 'inquiries' && pdfFile && editingItem) {
+            let imageUrl = formData.image || formData.logo || ''
+            
+            // Handle Generalized Image Upload
+            const imageFile = productImageFile || articleImageFile || logoFile
+            if (imageFile) {
                 try {
-                    setUploadProgress(25)
-                    const fileExt = pdfFile.name.split('.').pop()
-                    const timestamp = Date.now()
-                    const filePath = `${editingItem.id}/${timestamp}.${fileExt}`
+                    const fileExt = imageFile.name.split('.').pop()
+                    const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
+                    const folder = activeTab === 'articles' ? 'articles' : 'admin'
+                    const filePath = `${folder}/${fileName}`
 
-                    setUploadProgress(50)
-                    const { error: uploadError, data: uploadData } = await supabase.storage
-                        .from('quotes')
-                        .upload(filePath, pdfFile)
+                    const { error: uploadError } = await supabase.storage
+                        .from('Product')
+                        .upload(filePath, imageFile)
 
-                    if (uploadError) throw new Error(`PDF Upload failed: ${uploadError.message}`)
+                    if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`)
 
-                    setUploadProgress(75)
                     const { data: { publicUrl } } = supabase.storage
-                        .from('quotes')
+                        .from('Product')
                         .getPublicUrl(filePath)
 
-                    pdfUrl = publicUrl
-                    setUploadProgress(100)
+                    imageUrl = publicUrl
                 } catch (uploadErr) {
-                    alert('PDF Upload Error: ' + uploadErr.message + '. Continuing without PDF.')
-                    console.error('PDF upload failed:', uploadErr)
+                    alert('Image Upload Error: ' + uploadErr.message + '. Please enter image URL manually.')
+                    console.error('Image upload failed:', uploadErr)
                 }
             }
 
+            // Exclude joined fields and internal IDs for clean update/insert
+            const { id, created_at, products, profiles, buyer, ...payload } = formData
+            
+            // Set the correct image/logo field
+            if (table === 'installers') payload.logo = imageUrl
+            else if (table === 'products' || table === 'articles' || table === 'suppliers') payload.image = imageUrl
+
             if (editingItem) {
-                // Exclude id, created_at, and joined fields from the update payload
-                const { id, created_at, products, profiles, buyer, ...updates } = formData
-
-                // Add PDF URL if it was uploaded
-                if (pdfUrl) updates.quote_pdf_url = pdfUrl
-
-                // Upload product image if one is selected (for products tab)
-                if (activeTab === 'products' && productImageFile) {
-                    try {
-                        const fileExt = productImageFile.name.split('.').pop()
-                        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
-                        const filePath = `admin/${fileName}`
-
-                        const { error: uploadError } = await supabase.storage
-                            .from('Product')
-                            .upload(filePath, productImageFile)
-
-                        if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`)
-
-                        const { data: { publicUrl } } = supabase.storage
-                            .from('Product')
-                            .getPublicUrl(filePath)
-
-                        updates.image = publicUrl
-                    } catch (uploadErr) {
-                        alert('Image Upload Error: ' + uploadErr.message)
-                        console.error('Image upload failed:', uploadErr)
-                    }
-                }
-
-                // Sanitize quote_price for inquiries (remove commas and currency symbols)
-                if (activeTab === 'inquiries' && updates.quote_price) {
-                    // Remove 'K', commas, and spaces, then parse as number
-                    const sanitized = updates.quote_price.toString().replace(/[K,\s]/g, '')
-                    updates.quote_price = sanitized ? parseFloat(sanitized) : null
-                }
-
-                // Upload article image if one is selected (for articles tab)
-                if (activeTab === 'articles' && articleImageFile) {
-                    try {
-                        const fileExt = articleImageFile.name.split('.').pop()
-                        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
-                        const filePath = `articles/${fileName}`
-
-                        const { error: uploadError } = await supabase.storage
-                            .from('Product')
-                            .upload(filePath, articleImageFile)
-
-                        if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`)
-
-                        const { data: { publicUrl } } = supabase.storage
-                            .from('Product')
-                            .getPublicUrl(filePath)
-
-                        updates.image = publicUrl
-                    } catch (uploadErr) {
-                        alert('Image Upload Error: ' + uploadErr.message)
-                        console.error('Image upload failed:', uploadErr)
-                    }
-                }
-
-                const { error } = await supabase.from(table).update(updates).eq('id', editingItem.id)
+                const { error } = await supabase.from(table).update(payload).eq('id', editingItem.id)
                 if (error) throw error
+                logAdminAction(`update_${table}`, `Updated ${table} item ${editingItem.id}`)
             } else {
-                // For new products, upload image first
-                let imageUrl = formData.image || ''
-
-                if (activeTab === 'products' && productImageFile) {
-                    try {
-                        const fileExt = productImageFile.name.split('.').pop()
-                        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
-                        const filePath = `admin/${fileName}`
-
-                        const { error: uploadError } = await supabase.storage
-                            .from('Product')
-                            .upload(filePath, productImageFile)
-
-                        if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`)
-
-                        const { data: { publicUrl } } = supabase.storage
-                            .from('Product')
-                            .getPublicUrl(filePath)
-
-                        imageUrl = publicUrl
-                    } catch (uploadErr) {
-                        alert('Image Upload Error: ' + uploadErr.message + '. Please enter image URL manually.')
-                        console.error('Image upload failed:', uploadErr)
-                    }
-                }
-
-
-
-                // Upload article image for new articles
-                if (activeTab === 'articles' && articleImageFile) {
-                    try {
-                        const fileExt = articleImageFile.name.split('.').pop()
-                        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
-                        const filePath = `articles/${fileName}`
-
-                        const { error: uploadError } = await supabase.storage
-                            .from('Product')
-                            .upload(filePath, articleImageFile)
-
-                        if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`)
-
-                        const { data: { publicUrl } } = supabase.storage
-                            .from('Product')
-                            .getPublicUrl(filePath)
-
-                        imageUrl = publicUrl
-                    } catch (uploadErr) {
-                        alert('Image Upload Error: ' + uploadErr.message + '. Please enter image URL manually.')
-                        console.error('Image upload failed:', uploadErr)
-                    }
-                }
-
-                const insertData = (activeTab === 'products' || activeTab === 'articles') ? { ...formData, image: imageUrl } : formData
-                const { error } = await supabase.from(table).insert([insertData])
+                const { error } = await supabase.from(table).insert([payload])
                 if (error) throw error
+                logAdminAction(`insert_${table}`, `Added new ${table} item`)
             }
 
             setShowModal(false)
@@ -328,6 +243,8 @@ const AdminDashboard = ({ profile }) => {
             setProductImagePreview(null)
             setArticleImageFile(null)
             setArticleImagePreview(null)
+            setLogoFile(null)
+            setLogoPreview(null)
             setUploadProgress(0)
             fetchData()
             alert('Saved successfully!')
@@ -375,6 +292,7 @@ const AdminDashboard = ({ profile }) => {
             else if (activeTab === 'articles') table = 'articles'
             else if (activeTab === 'suppliers') table = 'suppliers'
             else if (activeTab === 'products') table = 'products'
+            else if (activeTab === 'inquiries') table = 'inquiries'
             else return
             const { error } = await supabase.from(table).delete().eq('id', id)
             if (error) throw error
@@ -405,6 +323,7 @@ const AdminDashboard = ({ profile }) => {
             setFormData(item)
             setProductImagePreview(item.image || null)
             setArticleImagePreview(item.image || null)
+            setLogoPreview(item.logo || item.image || null)
         } else {
             setEditingItem(null)
             // Initialize default values for new items
@@ -415,6 +334,7 @@ const AdminDashboard = ({ profile }) => {
             setFormData(defaultData)
             setProductImagePreview(null)
             setArticleImagePreview(null)
+            setLogoPreview(null)
         }
         setShowModal(true)
     }
@@ -429,7 +349,7 @@ const AdminDashboard = ({ profile }) => {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '20px', marginBottom: '30px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>
+                <div style={{ display: 'flex', gap: '20px', marginBottom: '30px', borderBottom: '1px solid #ddd', paddingBottom: '10px', overflowX: 'auto', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
                     <button
                         onClick={() => setActiveTab('installers')}
                         style={{ background: 'none', border: 'none', padding: '10px 0', borderBottom: activeTab === 'installers' ? '3px solid var(--sun-orange)' : 'none', fontWeight: activeTab === 'installers' ? 700 : 400, color: activeTab === 'installers' ? 'var(--trust-blue)' : '#666' }}
@@ -866,7 +786,7 @@ const AdminDashboard = ({ profile }) => {
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                {activeTab === 'installers' ? (
+                                {activeTab === 'installers' || (activeTab === 'approvals' && !formData.company_name) ? (
                                     <>
                                         <input className="input-field" placeholder="Installer Name" value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} style={inputStyle} />
                                         <input className="input-field" placeholder="Location" value={formData.location || ''} onChange={e => setFormData({ ...formData, location: e.target.value })} style={inputStyle} />
@@ -874,7 +794,69 @@ const AdminDashboard = ({ profile }) => {
                                             <input className="input-field" type="number" step="0.1" placeholder="Rating (0-5)" value={formData.rating || ''} onChange={e => setFormData({ ...formData, rating: parseFloat(e.target.value) })} style={inputStyle} />
                                             <input className="input-field" type="number" placeholder="Projects Completed" value={formData.projects || ''} onChange={e => setFormData({ ...formData, projects: parseInt(e.target.value) })} style={inputStyle} />
                                         </div>
-                                        <input className="input-field" placeholder="Image URL (Logo)" value={formData.logo || ''} onChange={e => setFormData({ ...formData, logo: e.target.value })} style={inputStyle} />
+                                        
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '8px', color: '#555' }}>Installer Logo / Profile Image</label>
+                                            <div style={{
+                                                border: '2px dashed #ddd',
+                                                borderRadius: '12px',
+                                                padding: '20px',
+                                                textAlign: 'center',
+                                                cursor: 'pointer',
+                                                position: 'relative',
+                                                background: logoPreview ? '#f8f9fa' : 'white',
+                                                marginBottom: '12px'
+                                            }}>
+                                                {logoPreview ? (
+                                                    <div style={{ position: 'relative', width: '100%', height: '120px' }}>
+                                                        <img
+                                                            src={logoPreview}
+                                                            alt="Preview"
+                                                            style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                setLogoFile(null)
+                                                                setLogoPreview(null)
+                                                                setFormData({ ...formData, logo: '' })
+                                                            }}
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: '-10px',
+                                                                right: '-10px',
+                                                                background: '#ff4d4d',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                borderRadius: '50%',
+                                                                width: '24px',
+                                                                height: '24px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                                                        <div style={{ fontSize: '1.5rem' }}>📷</div>
+                                                        <div style={{ fontSize: '0.85rem', color: '#666' }}>Click to upload logo</div>
+                                                    </div>
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleLogoChange}
+                                                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                                                />
+                                            </div>
+                                            <input className="input-field" placeholder="Or paste Image URL (Logo)" value={formData.logo || ''} onChange={e => setFormData({ ...formData, logo: e.target.value })} style={inputStyle} />
+                                        </div>
+
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <input type="checkbox" checked={formData.certified || false} onChange={e => setFormData({ ...formData, certified: e.target.checked })} id="cert" />
                                             <label htmlFor="cert">Certified Installer</label>
@@ -967,12 +949,75 @@ const AdminDashboard = ({ profile }) => {
                                         <textarea className="input-field" placeholder="Excerpt (Short summary)" value={formData.excerpt || ''} onChange={e => setFormData({ ...formData, excerpt: e.target.value })} style={{ ...inputStyle, height: '80px' }} />
                                         <textarea className="input-field" placeholder="Full Content" value={formData.content || ''} onChange={e => setFormData({ ...formData, content: e.target.value })} style={{ ...inputStyle, height: '200px' }} />
                                     </>
-                                ) : activeTab === 'suppliers' ? (
+                                ) : activeTab === 'suppliers' || (activeTab === 'approvals' && formData.company_name) ? (
                                     <>
                                         <input className="input-field" placeholder="Company Name" value={formData.company_name || ''} onChange={e => setFormData({ ...formData, company_name: e.target.value })} style={inputStyle} />
                                         <input className="input-field" placeholder="ZRA TPIN" value={formData.zra_tpin || ''} onChange={e => setFormData({ ...formData, zra_tpin: e.target.value })} style={inputStyle} />
                                         <input className="input-field" placeholder="Phone" value={formData.phone || ''} onChange={e => setFormData({ ...formData, phone: e.target.value })} style={inputStyle} />
                                         <textarea className="input-field" placeholder="Address" value={formData.address || ''} onChange={e => setFormData({ ...formData, address: e.target.value })} style={{ ...inputStyle, height: '80px' }} />
+                                        
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '8px', color: '#555' }}>Company Logo / Image</label>
+                                            <div style={{
+                                                border: '2px dashed #ddd',
+                                                borderRadius: '12px',
+                                                padding: '20px',
+                                                textAlign: 'center',
+                                                cursor: 'pointer',
+                                                position: 'relative',
+                                                background: logoPreview ? '#f8f9fa' : 'white',
+                                                marginBottom: '12px'
+                                            }}>
+                                                {logoPreview ? (
+                                                    <div style={{ position: 'relative', width: '100%', height: '120px' }}>
+                                                        <img
+                                                            src={logoPreview}
+                                                            alt="Preview"
+                                                            style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                setLogoFile(null)
+                                                                setLogoPreview(null)
+                                                                setFormData({ ...formData, image: '' })
+                                                            }}
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: '-10px',
+                                                                right: '-10px',
+                                                                background: '#ff4d4d',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                borderRadius: '50%',
+                                                                width: '24px',
+                                                                height: '24px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                                                        <div style={{ fontSize: '1.5rem' }}>📷</div>
+                                                        <div style={{ fontSize: '0.85rem', color: '#666' }}>Click to upload logo</div>
+                                                    </div>
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleLogoChange}
+                                                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                                                />
+                                            </div>
+                                            <input className="input-field" placeholder="Or paste Image URL" value={formData.image || ''} onChange={e => setFormData({ ...formData, image: e.target.value })} style={inputStyle} />
+                                        </div>
+
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
                                             <input type="checkbox" checked={formData.is_verified || false} onChange={e => setFormData({ ...formData, is_verified: e.target.checked })} id="verify" />
                                             <label htmlFor="verify">Verified Supplier</label>

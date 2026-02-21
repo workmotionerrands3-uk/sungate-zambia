@@ -191,6 +191,7 @@ button {
   
   .modal-container {
     max-height: 100vh;
+    height: 100vh;
     border-radius: 0;
   }
 
@@ -251,5 +252,10 @@ button {
 @media (max-width: 767px) {
   .grid-2, .grid-3, .grid-4 {
     grid-template-columns: 1fr !important;
+  }
+  
+  /* Prevent horizontal overflow on long elements */
+  .container {
+    overflow-x: hidden;
   }
 }
