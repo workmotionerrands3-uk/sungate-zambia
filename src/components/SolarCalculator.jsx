@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { MapPin, Zap, Battery, Home, Briefcase, Calculator, ArrowRight, RotateCcw } from 'lucide-react'
 
-const SolarCalculator = ({ onSaveResult }) => {
+const SolarCalculator = ({ onSaveResult, zescoRate = 1.35 }) => {
     const [step, setStep] = useState(1)
     const [formData, setFormData] = useState({
         location: '',
@@ -38,10 +38,10 @@ const SolarCalculator = ({ onSaveResult }) => {
         const costMax = systemSize * 15000
         const savings = formData.bill * 0.9 // Assuming 90% offset
 
-        // Net Metering Logic: 2026 Rate K1.35/kWh
+        // Net Metering Logic: Use Dynamic Rate
         // Assuming surplus generation of 10kWh/day for 22 equivalent days/month
         const surplusEstimated = systemSize * 2.5 // Rough surplus generated per day
-        const netMeteringIncome = surplusEstimated * 30 * 1.35
+        const netMeteringIncome = surplusEstimated * 30 * zescoRate
 
         setResults({
             size: `${systemSize}kW`,
@@ -190,7 +190,7 @@ const SolarCalculator = ({ onSaveResult }) => {
                                         <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--zambia-green)' }}>{results.savings}</div>
                                     </div>
                                     <div style={{ background: 'white', padding: '15px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--sun-orange)' }}>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--sun-orange)', fontWeight: 700 }}>ZESCO Return (K1.35)</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--sun-orange)', fontWeight: 700 }}>ZESCO Return (K{zescoRate})</div>
                                         <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{results.income}</div>
                                     </div>
                                     <div style={{ background: 'white', padding: '15px', borderRadius: 'var(--radius-sm)' }}>

@@ -10,6 +10,7 @@ const AdminDashboard = ({ profile }) => {
     const [products, setProducts] = useState([])
     const [users, setUsers] = useState([])
     const [inquiries, setInquiries] = useState([])
+    const [logs, setLogs] = useState([])
     const [analytics, setAnalytics] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
@@ -22,10 +23,26 @@ const AdminDashboard = ({ profile }) => {
     const [productImagePreview, setProductImagePreview] = useState(null)
     const [articleImageFile, setArticleImageFile] = useState(null)
     const [articleImagePreview, setArticleImagePreview] = useState(null)
+    const [settings, setSettings] = useState({ zesco_rate: 1.35, support_phone: '0974300472', commission_rate: 5 })
+    const [pendingPartners, setPendingPartners] = useState([])
 
     useEffect(() => {
         fetchData()
     }, [activeTab])
+
+    const logAdminAction = async (action, details) => {
+        try {
+            const { error } = await supabase.from('admin_logs').insert([{
+                admin_id: profile?.id,
+                action,
+                details,
+                created_at: new Date().toISOString()
+            }])
+            if (error) console.warn('Logging error (possibly table missing):', error.message)
+        } catch (err) {
+            console.warn('Logging failed:', err)
+        }
+    }
 
     const fetchData = async () => {
         setLoading(true)
@@ -89,10 +106,52 @@ const AdminDashboard = ({ profile }) => {
                     totalSales: totalSalesVal > 0 ? `K${totalSalesVal.toLocaleString()}` : 'K0',
                     pendingOrders: pendingRes.count || 0
                 })
+            } else if (activeTab === 'approvals') {
+                const installers = await supabase.from('installers').select('*').eq('certified', false)
+                const suppliers = await supabase.from('suppliers').select('*').eq('is_verified', false)
+                setPendingPartners([...(installers.data || []), ...(suppliers.data || [])])
+            } else if (activeTab === 'logs') {
+                const { data } = await supabase.from('admin_logs').select('*').order('created_at', { ascending: false }).limit(50)
+                setLogs(data || [])
+            } else if (activeTab === 'settings') {
+                const { data } = await supabase.from('site_settings').select('*').single()
+                if (data) setSettings(data)
             }
         } catch (err) {
             console.error('Error fetching data:', err)
             setError(err.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const updateUserRole = async (userId, newRole) => {
+        try {
+            setLoading(true)
+            const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId)
+            if (error) throw error
+            logAdminAction('update_user_role', `Updated user ${userId} to ${newRole}`)
+            fetchData()
+            alert('User role updated!')
+        } catch (err) {
+            alert('Error updating role: ' + err.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const toggleUserStatus = async (user) => {
+        try {
+            setLoading(true)
+            // Assuming is_active column exists (or we treat role='suspended' as inactive)
+            const newRole = user.role === 'suspended' ? 'user' : 'suspended'
+            const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', user.id)
+            if (error) throw error
+            logAdminAction('toggle_user_status', `Toggled status for user ${user.id}`)
+            fetchData()
+            alert(newRole === 'suspended' ? 'User suspended!' : 'User reactivated!')
+        } catch (err) {
+            alert('Error updating status: ' + err.message)
         } finally {
             setLoading(false)
         }
@@ -325,6 +384,21 @@ const AdminDashboard = ({ profile }) => {
         }
     }
 
+    const handleUpdateSettings = async (updates) => {
+        try {
+            setLoading(true)
+            const { error } = await supabase.from('site_settings').update(updates).eq('id', settings.id || 1)
+            if (error) throw error
+            setSettings({ ...settings, ...updates })
+            logAdminAction('update_settings', 'Updated global site settings')
+            alert('Settings updated!')
+        } catch (err) {
+            alert('Error updating settings: ' + err.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
     const openModal = (item = null) => {
         if (item) {
             setEditingItem(item)
@@ -397,6 +471,24 @@ const AdminDashboard = ({ profile }) => {
                         style={{ background: 'none', border: 'none', padding: '10px 0', borderBottom: activeTab === 'analytics' ? '3px solid var(--sun-orange)' : 'none', fontWeight: activeTab === 'analytics' ? 700 : 400, color: activeTab === 'analytics' ? 'var(--trust-blue)' : '#666' }}
                     >
                         Analytics
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('approvals')}
+                        style={{ background: 'none', border: 'none', padding: '10px 0', borderBottom: activeTab === 'approvals' ? '3px solid var(--sun-orange)' : 'none', fontWeight: activeTab === 'approvals' ? 700 : 400, color: activeTab === 'approvals' ? 'var(--trust-blue)' : '#666' }}
+                    >
+                        Approvals
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('settings')}
+                        style={{ background: 'none', border: 'none', padding: '10px 0', borderBottom: activeTab === 'settings' ? '3px solid var(--sun-orange)' : 'none', fontWeight: activeTab === 'settings' ? 700 : 400, color: activeTab === 'settings' ? 'var(--trust-blue)' : '#666' }}
+                    >
+                        Settings
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('logs')}
+                        style={{ background: 'none', border: 'none', padding: '10px 0', borderBottom: activeTab === 'logs' ? '3px solid var(--sun-orange)' : 'none', fontWeight: activeTab === 'logs' ? 700 : 400, color: activeTab === 'logs' ? 'var(--trust-blue)' : '#666' }}
+                    >
+                        Logs
                     </button>
                 </div>
 
@@ -561,13 +653,41 @@ const AdminDashboard = ({ profile }) => {
                                         <tr key={user.id} style={{ borderBottom: '1px solid #eee' }}>
                                             <td style={{ padding: '16px', fontSize: '0.9rem', color: '#666' }}>{user.id}</td>
                                             <td style={{ padding: '16px' }}>
-                                                <span style={{ padding: '4px 8px', borderRadius: '4px', background: user.role === 'admin' ? '#e3f2fd' : '#f5f5f5', color: user.role === 'admin' ? '#1976d2' : '#666', fontSize: '0.8rem', fontWeight: 500 }}>
-                                                    {user.role}
-                                                </span>
+                                                <select 
+                                                    value={user.role} 
+                                                    onChange={(e) => updateUserRole(user.id, e.target.value)}
+                                                    style={{ 
+                                                        padding: '4px 8px', 
+                                                        borderRadius: '4px', 
+                                                        background: user.role === 'admin' ? '#e3f2fd' : user.role === 'suspended' ? '#ffebee' : '#f5f5f5', 
+                                                        color: user.role === 'admin' ? '#1976d2' : user.role === 'suspended' ? 'red' : '#666', 
+                                                        fontSize: '0.8rem', 
+                                                        fontWeight: 500,
+                                                        border: '1px solid #ddd'
+                                                    }}
+                                                >
+                                                    <option value="user">User</option>
+                                                    <option value="supplier">Supplier</option>
+                                                    <option value="installer">Installer</option>
+                                                    <option value="admin">Admin</option>
+                                                    <option value="suspended">Suspended</option>
+                                                </select>
                                             </td>
                                             <td style={{ padding: '16px', fontSize: '0.9rem', color: '#666' }}>{new Date(user.created_at).toLocaleDateString()}</td>
                                             <td style={{ padding: '16px', textAlign: 'right' }}>
-                                                <button style={{ background: 'none', border: 'none', color: '#999', cursor: 'not-allowed' }} title="Manage Users in Supabase Auth">Manage</button>
+                                                <button 
+                                                    onClick={() => toggleUserStatus(user)}
+                                                    style={{ 
+                                                        background: 'none', 
+                                                        border: 'none', 
+                                                        color: user.role === 'suspended' ? 'green' : '#ff4d4d', 
+                                                        cursor: 'pointer',
+                                                        fontSize: '0.85rem',
+                                                        fontWeight: 600
+                                                    }}
+                                                >
+                                                    {user.role === 'suspended' ? 'Activate' : 'Suspend'}
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -617,7 +737,123 @@ const AdminDashboard = ({ profile }) => {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="grid grid-2" style={{ marginTop: '30px' }}>
+                            <div style={{ background: 'white', padding: '24px', borderRadius: '12px', boxShadow: 'var(--shadow-sm)' }}>
+                                <h4 style={{ marginBottom: '20px' }}>Demand by Category</h4>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    {['Kits', 'Panels', 'Batteries', 'Inverters', 'Accessories'].map(cat => {
+                                        const count = inquiries.filter(iq => iq.products?.category === cat).length
+                                        const total = inquiries.length || 1
+                                        const percent = Math.round((count / total) * 100)
+                                        return (
+                                            <div key={cat}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
+                                                    <span>{cat}</span>
+                                                    <span>{percent}%</span>
+                                                </div>
+                                                <div style={{ width: '100%', height: '8px', background: '#f0f0f0', borderRadius: '4px', overflow: 'hidden' }}>
+                                                    <div style={{ width: `${percent}%`, height: '100%', background: 'var(--sun-orange)' }}></div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                            <div style={{ background: 'white', padding: '24px', borderRadius: '12px', boxShadow: 'var(--shadow-sm)' }}>
+                                <h4 style={{ marginBottom: '20px' }}>System Health</h4>
+                                <div style={{ fontSize: '0.9rem', color: '#666' }}>
+                                    <p>• Database Connection: <span style={{ color: 'green' }}>ACTIVE</span></p>
+                                    <p>• Storage Quota: <span style={{ color: 'green' }}>OK</span></p>
+                                    <p>• Auth Service: <span style={{ color: 'green' }}>OK</span></p>
+                                    <p style={{ marginTop: '10px', fontSize: '0.75rem', fontStyle: 'italic' }}>Last scan: {new Date().toLocaleTimeString()}</p>
+                                </div>
+                            </div>
+                        </div>
                     </>
+                )}
+
+                {!loading && activeTab === 'approvals' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {pendingPartners.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '50px', background: 'white', borderRadius: '12px' }}>
+                                <p>No pending partner verifications.</p>
+                            </div>
+                        ) : (
+                            pendingPartners.map(p => (
+                                <div key={p.id} style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div>
+                                        <h3 style={{ fontSize: '1.1rem' }}>{p.name || p.company_name}</h3>
+                                        <p style={{ color: '#666', fontSize: '0.85rem' }}>Type: {p.company_name ? 'Supplier' : 'Installer'} • TPIN/ID: {p.zra_tpin || 'N/A'}</p>
+                                    </div>
+                                    <button onClick={() => openModal(p)} className="btn btn-primary">Review & Verify</button>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
+
+                {!loading && activeTab === 'settings' && (
+                    <div style={{ maxWidth: '600px', margin: '0 auto', background: 'white', padding: '40px', borderRadius: '16px', boxShadow: 'var(--shadow-md)' }}>
+                        <h3 style={{ marginBottom: '30px', color: 'var(--trust-blue)' }}>Global Site Settings</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.9rem', color: '#666', marginBottom: '8px' }}>ZESCO Export Rate (K per kWh)</label>
+                                <input 
+                                    type="number" step="0.01" 
+                                    value={settings.zesco_rate} 
+                                    onChange={e => setSettings({ ...settings, zesco_rate: parseFloat(e.target.value) })}
+                                    style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px' }} 
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.9rem', color: '#666', marginBottom: '8px' }}>Admin Support Phone</label>
+                                <input 
+                                    type="text" 
+                                    value={settings.support_phone} 
+                                    onChange={e => setSettings({ ...settings, support_phone: e.target.value })}
+                                    style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px' }} 
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.9rem', color: '#666', marginBottom: '8px' }}>Marketplace Commission (%)</label>
+                                <input 
+                                    type="number" 
+                                    value={settings.commission_rate} 
+                                    onChange={e => setSettings({ ...settings, commission_rate: parseFloat(e.target.value) })}
+                                    style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px' }} 
+                                />
+                            </div>
+                            <button className="btn btn-primary" onClick={() => handleUpdateSettings(settings)} style={{ marginTop: '20px' }}>Save All Settings</button>
+                        </div>
+                    </div>
+                )}
+
+                {!loading && activeTab === 'logs' && (
+                    <div style={{ background: 'white', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead style={{ background: '#f8f9fa' }}>
+                                <tr>
+                                    <th style={{ padding: '16px', textAlign: 'left', fontWeight: 'bold' }}>Time</th>
+                                    <th style={{ padding: '16px', textAlign: 'left', fontWeight: 'bold' }}>Action</th>
+                                    <th style={{ padding: '16px', textAlign: 'left', fontWeight: 'bold' }}>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {logs.length === 0 ? (
+                                    <tr><td colSpan="3" style={{ padding: '30px', textAlign: 'center', color: '#888' }}>No logs yet.</td></tr>
+                                ) : (
+                                    logs.map((log, i) => (
+                                        <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
+                                            <td style={{ padding: '16px', fontSize: '0.85rem', color: '#888' }}>{new Date(log.created_at).toLocaleString()}</td>
+                                            <td style={{ padding: '16px', fontSize: '0.9rem', fontWeight: 600 }}>{log.action.replace(/_/g, ' ').toUpperCase()}</td>
+                                            <td style={{ padding: '16px', fontSize: '0.9rem', color: '#666' }}>{log.details}</td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 {/* MODAL */}

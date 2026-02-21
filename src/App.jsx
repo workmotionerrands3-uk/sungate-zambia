@@ -74,6 +74,8 @@ const App = () => {
   const [userSavedProducts, setUserSavedProducts] = useState([]);
   const [userCalcHistory, setUserCalcHistory] = useState([]);
   const [userInquiries, setUserInquiries] = useState([]);
+  const [siteSettings, setSiteSettings] = useState({ zesco_rate: 1.35, support_phone: '0974300472' });
+  const [loading, setLoading] = useState(true);
   const [passwordRecoveryMode, setPasswordRecoveryMode] = useState(false);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -233,6 +235,19 @@ const App = () => {
       fetchSupplierData();
     } catch (err) {
       notify("Failed to delete product", "error");
+    }
+  };
+
+  const deleteInquiry = async (id) => {
+    if (!confirm("Are you sure you want to cancel this quote request?")) return;
+    try {
+      const { error } = await supabase.from("inquiries").delete().eq("id", id);
+      if (error) throw error;
+      notify("Quote request cancelled.", "success");
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (err) {
+      console.error("Error deleting inquiry:", err);
+      notify("Failed to cancel request.", "error");
     }
   };
 
@@ -454,9 +469,20 @@ const App = () => {
     }
   }, [session, profile, refreshTrigger]);
 
+  useEffect(() => {
+    fetchSiteSettings();
+  }, []);
 
+  const fetchSiteSettings = async () => {
+    try {
+      const { data, error } = await supabase.from('site_settings').select('*').single();
+      if (data) setSiteSettings(data);
+    } catch (err) {
+      console.warn("Failed to fetch site settings, using defaults.", err);
+    }
+  };
 
-  const notify = (message, type = "success") => {
+  const notify = (message, type = "info") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 5000);
   };
@@ -496,6 +522,27 @@ const App = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleRoleUpgrade = async (newRole) => {
+    if (!session) return;
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ role: newRole })
+        .eq("id", session.user.id);
+
+      if (error) throw error;
+      
+      notify(`Account upgraded to ${newRole}! Welcome to the partner network.`, "success");
+      
+      // Force a full profile refresh
+      await fetchProfile(session.user.id);
+      setRefreshTrigger(prev => prev + 1);
+    } catch (err) {
+      console.error("Error upgrading role:", err);
+      notify("Failed to upgrade account. Please contact support.", "error");
+    }
+  };
 
   const fetchProfile = async (uid) => {
     const { data, error } = await supabase
@@ -633,14 +680,19 @@ const App = () => {
                     userInquiries={userInquiries}
                     onRemoveSaved={removeSavedProduct}
                     onDeleteHistory={deleteCalculatorResult}
+                    onDeleteInquiry={deleteInquiry}
                     setPdfUrl={setPdfUrl}
                     setShowPdfModal={setShowPdfModal}
+                    onRoleUpgrade={handleRoleUpgrade}
                   />
                 )}
                 
                 {/* Shared utilities for all logged-in users */}
                 <div id="calculator">
-                  <SolarCalculator onSaveResult={saveCalculatorResult} />
+                    <SolarCalculator 
+                      onSaveResult={saveCalculatorResult} 
+                      zescoRate={siteSettings.zesco_rate}
+                    />
                 </div>
                 <div id="marketplace">
                   <Marketplace

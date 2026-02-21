@@ -1,5 +1,4 @@
-import React from "react";
-import { Calculator, Trash2, Heart, MessageCircle } from "lucide-react";
+import { Calculator, Trash2, Heart, MessageCircle, Award } from "lucide-react";
 
 const UserDashboard = ({
   profile,
@@ -8,8 +7,10 @@ const UserDashboard = ({
   userInquiries,
   onRemoveSaved,
   onDeleteHistory,
+  onDeleteInquiry,
   setPdfUrl,
   setShowPdfModal,
+  onRoleUpgrade,
 }) => (
   <section
     style={{
@@ -361,8 +362,25 @@ const UserDashboard = ({
                       marginBottom: "4px",
                     }}
                   >
-                    <div style={{ fontWeight: 700, fontSize: "0.85rem" }}>
-                      {iq.products?.name}
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <div style={{ fontWeight: 700, fontSize: "0.85rem" }}>
+                        {iq.products?.name}
+                        </div>
+                        <button 
+                            onClick={() => onDeleteInquiry(iq.id)}
+                            style={{ 
+                                background: 'none', 
+                                border: 'none', 
+                                color: '#ff4d4d', 
+                                cursor: 'pointer', 
+                                padding: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                title: 'Cancel Request'
+                            }}
+                        >
+                            <Trash2 size={14} />
+                        </button>
                     </div>
                     <span
                       style={{
@@ -473,6 +491,50 @@ const UserDashboard = ({
             </div>
           )}
         </div>
+
+        {/* 4. Partner Opportunity */}
+        {profile?.role === "user" && (
+          <div
+            style={{
+              background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+              padding: "24px",
+              borderRadius: "16px",
+              color: "white",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gridColumn: "span 3"
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+              <div style={{ background: "rgba(255,255,255,0.1)", padding: "10px", borderRadius: "12px" }}>
+                <Award size={24} color="var(--sun-orange)" />
+              </div>
+              <h3 style={{ margin: 0, fontSize: "1.25rem", color: "white" }}>Professional Account Upgrade</h3>
+            </div>
+            
+            <p style={{ opacity: 0.8, fontSize: "0.95rem", marginBottom: "24px", maxWidth: "800px" }}>
+              Are you a solar equipment supplier or a certified installer? Upgrade your account to access professional tools, list products, and connect with customers across Zambia.
+            </p>
+
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+              <button 
+                onClick={() => onRoleUpgrade("supplier")}
+                className="btn btn-primary" 
+                style={{ padding: "12px 24px" }}
+              >
+                Become a Supplier
+              </button>
+              <button 
+                onClick={() => onRoleUpgrade("installer")}
+                className="btn" 
+                style={{ padding: "12px 24px", background: "rgba(255,255,255,0.1)", color: "white", border: "1px solid rgba(255,255,255,0.2)" }}
+              >
+                Become an Installer
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   </section>
