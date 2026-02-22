@@ -252,7 +252,10 @@ const App = () => {
     if (!confirm("Are you sure you want to cancel this quote request?")) return;
     try {
       const { error } = await supabase.from("inquiries").delete().eq("id", id);
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase deletion error:", error);
+        throw new Error(error.message || "Permission denied or database error");
+      }
       notify("Quote request cancelled.", "success");
       setRefreshTrigger((prev) => prev + 1);
       
@@ -264,7 +267,7 @@ const App = () => {
       }
     } catch (err) {
       console.error("Error deleting inquiry:", err);
-      notify("Failed to cancel request.", "error");
+      notify("Failed to cancel request: " + (err.message || "Unknown error"), "error");
     }
   };
 
