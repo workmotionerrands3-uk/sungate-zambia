@@ -548,6 +548,23 @@ const AdminDashboard = ({ profile }) => {
                                         </div>
                                         <div style={{ display: 'flex', gap: '10px' }}>
                                             <button onClick={() => openModal(inquiry)} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>Manage Quote</button>
+                                            <button 
+                                                onClick={() => handleDelete(inquiry.id)} 
+                                                style={{ 
+                                                    padding: '8px', 
+                                                    borderRadius: '6px', 
+                                                    border: '1px solid #fee', 
+                                                    background: '#ffebee', 
+                                                    color: 'red',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer'
+                                                }}
+                                                title="Delete Inquiry"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
                                         </div>
                                     </div>
                                 )
