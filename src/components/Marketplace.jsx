@@ -217,6 +217,74 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                     </div>
                 </div>
 
+                {/* Mobile Category & Filter Bar (Repositioned for stability) */}
+                <div className="mobile-only-filters" style={{ 
+                    flexDirection: 'column',
+                    gap: '16px',
+                    marginBottom: '24px',
+                    position: '-webkit-sticky',
+                    position: 'sticky',
+                    top: '80px',
+                    zIndex: 900,
+                    background: 'white',
+                    padding: '16px 8px',
+                    boxShadow: isFilterVisible ? '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)' : 'none',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transform: isFilterVisible ? 'translateY(0)' : 'translateY(-150px)',
+                    opacity: isFilterVisible ? 1 : 0,
+                    pointerEvents: isFilterVisible ? 'auto' : 'none',
+                    borderRadius: '0 0 16px 16px',
+                    width: '100vw',
+                    marginLeft: 'calc(-50vw + 50%)',
+                    paddingLeft: 'max(20px, env(safe-area-inset-left))',
+                    paddingRight: 'max(20px, env(safe-area-inset-right))'
+                }}>
+                    <div style={{ display: 'flex', overflowX: 'auto', gap: '8px', paddingBottom: '8px' }} className="no-scrollbar">
+                        {categories.map(cat => {
+                            const Icon = cat.icon
+                            return (
+                                <button
+                                    key={cat.name}
+                                    onClick={() => setFilter(cat.name)}
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '8px',
+                                        padding: '8px 16px', borderRadius: '99px', border: '1px solid #eee',
+                                        background: filter === cat.name ? 'var(--trust-blue)' : 'white',
+                                        color: filter === cat.name ? 'white' : 'var(--text-dark)',
+                                        whiteSpace: 'nowrap', fontWeight: 600, fontSize: '0.9rem'
+                                    }}
+                                >
+                                    <Icon size={16} /> {cat.name}
+                                </button>
+                            )
+                        })}
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button 
+                            onClick={() => setShowMobileFilters(true)}
+                            style={{
+                                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                padding: '12px', background: 'white', border: '1px solid #eee', borderRadius: '12px',
+                                fontWeight: 600
+                            }}
+                        >
+                            <SlidersHorizontal size={18} /> Filters
+                        </button>
+                        <div style={{ flex: 1, position: 'relative' }}>
+                            <ArrowUpDown size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                            <select 
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                style={{ width: '100%', padding: '12px 12px 12px 36px', border: '1px solid #eee', borderRadius: '12px', background: 'white', appearance: 'none', fontWeight: 600 }}
+                            >
+                                <option value="newest">Newest First</option>
+                                <option value="priceLow">Price: Low to High</option>
+                                <option value="priceHigh">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Main Content Layout */}
                 <div className="marketplace-layout-grid">
                     
@@ -316,70 +384,6 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                     {/* Main Products Area */}
                     <main className="marketplace-main-content">
                         
-                        {/* Mobile Category & Filter Bar */}
-                        <div className="mobile-only-filters" style={{ 
-                            flexDirection: 'column',
-                            gap: '16px',
-                            marginBottom: '24px',
-                            position: 'sticky',
-                            top: '80px',
-                            zIndex: 900,
-                            background: 'white',
-                            padding: '16px 8px',
-                            boxShadow: isFilterVisible ? '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)' : 'none',
-                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                            transform: isFilterVisible ? 'translateY(0)' : 'translateY(-150px)',
-                            opacity: isFilterVisible ? 1 : 0,
-                            pointerEvents: isFilterVisible ? 'auto' : 'none',
-                            marginTop: '-12px',
-                            borderRadius: '0 0 16px 16px'
-                        }}>
-                            <div style={{ display: 'flex', overflowX: 'auto', gap: '8px', paddingBottom: '8px' }} className="no-scrollbar">
-                                {categories.map(cat => {
-                                    const Icon = cat.icon
-                                    return (
-                                        <button
-                                            key={cat.name}
-                                            onClick={() => setFilter(cat.name)}
-                                            style={{
-                                                display: 'flex', alignItems: 'center', gap: '8px',
-                                                padding: '8px 16px', borderRadius: '99px', border: '1px solid #eee',
-                                                background: filter === cat.name ? 'var(--trust-blue)' : 'white',
-                                                color: filter === cat.name ? 'white' : 'var(--text-dark)',
-                                                whiteSpace: 'nowrap', fontWeight: 600, fontSize: '0.9rem'
-                                            }}
-                                        >
-                                            <Icon size={16} /> {cat.name}
-                                        </button>
-                                    )
-                                })}
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button 
-                                    onClick={() => setShowMobileFilters(true)}
-                                    style={{
-                                        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                                        padding: '12px', background: 'white', border: '1px solid #eee', borderRadius: '12px',
-                                        fontWeight: 600
-                                    }}
-                                >
-                                    <SlidersHorizontal size={18} /> Filters
-                                </button>
-                                <div style={{ flex: 1, position: 'relative' }}>
-                                    <ArrowUpDown size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
-                                    <select 
-                                        value={sortBy}
-                                        onChange={(e) => setSortBy(e.target.value)}
-                                        style={{ width: '100%', padding: '12px 12px 12px 36px', border: '1px solid #eee', borderRadius: '12px', background: 'white', appearance: 'none', fontWeight: 600 }}
-                                    >
-                                        <option value="newest">Newest First</option>
-                                        <option value="priceLow">Price: Low to High</option>
-                                        <option value="priceHigh">Price: High to Low</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
                         {/* Top Control Bar (Desktop) */}
                         <div className="desktop-only-controls" style={{ 
                             justifyContent: 'flex-end',

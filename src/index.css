@@ -248,14 +248,69 @@ button {
   min-height: 100vh;
 }
 
-/* Fix for mobile responsiveness on new grids */
-@media (max-width: 767px) {
-  .grid-2, .grid-3, .grid-4 {
-    grid-template-columns: 1fr !important;
+/* Layout Helper Classes */
+.marketplace-layout-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 32px;
+}
+
+.sidebar-desktop {
+  display: block;
+}
+
+.mobile-only-filters {
+  display: none;
+}
+
+.desktop-only-controls {
+  display: flex;
+}
+
+.marketplace-main-content {
+  grid-column: span 9;
+}
+
+@media (max-width: 1024px) {
+  .sidebar-desktop {
+    display: none;
   }
   
-  /* Prevent horizontal overflow on long elements */
+  .mobile-only-filters {
+    display: flex;
+  }
+
+  .desktop-only-controls {
+    display: none;
+  }
+
+  .marketplace-main-content {
+    grid-column: span 12 !important;
+  }
+
+  /* Marketplace Layout Grid Fix */
+  .marketplace-layout-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+/* Global Mobile Fixes to prevent overflow */
+@media (max-width: 640px) {
+  * {
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+    overflow-wrap: break-word;
+  }
+  
+  body, html {
+    position: relative;
+    width: 100%;
+  }
+
   .container {
-    overflow-x: hidden;
+    max-width: 100vw !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
   }
 }
