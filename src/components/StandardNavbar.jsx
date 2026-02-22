@@ -233,6 +233,25 @@ const StandardNavbar = ({
             >
               Become a Partner
             </a>
+            {session && (
+              <button
+                onClick={() => {
+                  onLogout();
+                  setIsOpen(false);
+                }}
+                className="btn btn-secondary"
+                style={{ 
+                  width: "100%", 
+                  marginTop: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                <LogOut size={18} /> Logout
+              </button>
+            )}
             {!session && (
               <button
                 onClick={() => {
@@ -252,6 +271,10 @@ const StandardNavbar = ({
       <style>{`
                 @media (max-width: 991px) { .desktop-menu { display: none !important; } }
                 @media (min-width: 992px) { .mobile-menu-btn { display: none !important; } }
+                @media (max-width: 480px) {
+                  .profile-details-desktop { display: none !important; }
+                  .nav-actions .btn-secondary { display: none !important; }
+                }
             `}</style>
     </nav>
   );

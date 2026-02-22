@@ -14,6 +14,8 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
     const [quoteForm, setQuoteForm] = useState({ quantity: 1, notes: '', phone: '' })
     const [sortBy, setSortBy] = useState('newest') // newest, priceLow, priceHigh
     const [showMobileFilters, setShowMobileFilters] = useState(false)
+    const [isFilterVisible, setIsFilterVisible] = useState(true)
+    const [lastScrollY, setLastScrollY] = useState(0)
 
     const handleRequestQuote = (product) => {
         if (!session) {
@@ -104,6 +106,23 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
         { name: 'Solar Panels', icon: Sun },
         { name: 'Water Heaters', icon: Waves }
     ]
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > lastScrollY && currentScrollY > 200) {
+                // Scrolling down - hide filters
+                setIsFilterVisible(false);
+            } else if (currentScrollY < lastScrollY) {
+                // Scrolling up - show filters
+                setIsFilterVisible(true);
+            }
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
 
     useEffect(() => {
         fetchProducts()
@@ -298,7 +317,18 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                         <div className="mobile-only-filters" style={{ 
                             flexDirection: 'column',
                             gap: '16px',
-                            marginBottom: '24px'
+                            marginBottom: '24px',
+                            position: 'sticky',
+                            top: '80px',
+                            zIndex: 900,
+                            background: 'rgba(255,255,255,0.95)',
+                            padding: '12px 0',
+                            backdropFilter: 'blur(8px)',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            transform: isFilterVisible ? 'translateY(0)' : 'translateY(-100px)',
+                            opacity: isFilterVisible ? 1 : 0,
+                            pointerEvents: isFilterVisible ? 'auto' : 'none',
+                            marginTop: '-12px'
                         }}>
                             <div style={{ display: 'flex', overflowX: 'auto', gap: '8px', paddingBottom: '8px' }} className="no-scrollbar">
                                 {categories.map(cat => {

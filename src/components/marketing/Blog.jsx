@@ -258,17 +258,28 @@ const Blog = () => {
           <p style={{ opacity: 0.9, marginBottom: '32px', fontSize: '1.1rem' }}>
             Join 5,000+ Zambians receiving weekly solar tips and exclusive hardware deals.
           </p>
-          <div style={{ display: 'flex', gap: '12px', maxWidth: '500px', margin: '0 auto' }}>
+          <div className="newsletter-form-container" style={{ display: 'flex', gap: '12px', maxWidth: '500px', margin: '0 auto' }}>
             <input 
               type="email" 
               placeholder="Enter your email" 
-              style={{ flex: 1, padding: '16px 24px', borderRadius: '12px', border: 'none', outline: 'none' }} 
+              style={{ flex: 1, padding: '16px 24px', borderRadius: '12px', border: 'none', outline: 'none', minWidth: '0' }} 
             />
-            <button className="btn btn-primary" style={{ padding: '0 32px' }}>
+            <button className="btn btn-primary" style={{ padding: '0 32px', whiteSpace: 'nowrap' }}>
               Subscribe
             </button>
           </div>
         </div>
+        <style>{`
+          @media (max-width: 480px) {
+            .newsletter-form-container {
+              flex-direction: column;
+              align-items: stretch;
+            }
+            .newsletter-form-container button {
+              padding: 16px !important;
+            }
+          }
+        `}</style>
       </section>
     </div>
   );

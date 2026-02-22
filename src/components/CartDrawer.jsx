@@ -65,9 +65,11 @@ const CartDrawer = ({ isOpen, onClose, items, onRemove, onNotify, onQuoteRequest
                                         <button
                                             onClick={() => onRemove(index)}
                                             style={{
-                                                marginTop: '8px', background: 'none', border: 'none',
+                                                marginTop: '8px', background: 'rgba(255, 77, 77, 0.05)', 
+                                                border: '1px solid #ffebeb',
                                                 color: '#ff4d4d', fontSize: '0.8rem', display: 'flex',
-                                                alignItems: 'center', gap: '4px', cursor: 'pointer', padding: 0
+                                                alignItems: 'center', gap: '6px', cursor: 'pointer', 
+                                                padding: '8px 12px', borderRadius: '8px'
                                             }}
                                         >
                                             <Trash2 size={14} /> Remove

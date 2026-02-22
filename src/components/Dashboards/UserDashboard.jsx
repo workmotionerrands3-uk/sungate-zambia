@@ -143,21 +143,23 @@ const UserDashboard = ({
                   </div>
                   <button
                     onClick={() => onDeleteHistory(res.id)}
+                    className="btn-icon-delete"
                     style={{
                       position: "absolute",
                       top: "12px",
                       right: "12px",
-                      background: "none",
-                      border: "none",
-                      color: "#ccc",
+                      background: "rgba(255, 77, 77, 0.05)",
+                      border: "1px solid #ffebeb",
+                      color: "#ff4d4d",
                       cursor: "pointer",
+                      padding: "8px",
+                      borderRadius: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
                     }}
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.color = "#ff4d4d")
-                    }
-                    onMouseOut={(e) => (e.currentTarget.style.color = "#ccc")}
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               ))}
@@ -274,18 +276,20 @@ const UserDashboard = ({
                   </div>
                   <button
                     onClick={() => onRemoveSaved(sp.id)}
+                    className="btn-icon-delete"
                     style={{
-                      background: "none",
-                      border: "none",
-                      color: "#ccc",
+                      background: "rgba(255, 77, 77, 0.05)",
+                      border: "1px solid #ffebeb",
+                      color: "#ff4d4d",
                       cursor: "pointer",
+                      padding: "8px",
+                      borderRadius: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
                     }}
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.color = "#ff4d4d")
-                    }
-                    onMouseOut={(e) => (e.currentTarget.style.color = "#ccc")}
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={18} />
                   </button>
                 </div>
               ))}
@@ -371,18 +375,21 @@ const UserDashboard = ({
                         </div>
                         <button 
                             onClick={() => onDeleteInquiry(iq.id)}
+                            className="btn-icon-delete"
+                            title="Cancel Request"
                             style={{ 
-                                background: 'none', 
-                                border: 'none', 
+                                background: 'rgba(255, 77, 77, 0.1)', 
+                                border: '1px solid #ffebeb', 
                                 color: '#ff4d4d', 
                                 cursor: 'pointer', 
-                                padding: '4px',
+                                padding: '8px',
+                                borderRadius: '8px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                title: 'Cancel Request'
+                                justifyContent: 'center'
                             }}
                         >
-                            <Trash2 size={14} />
+                            <Trash2 size={16} />
                         </button>
                     </div>
                     <span

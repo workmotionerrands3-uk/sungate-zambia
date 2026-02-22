@@ -388,4 +388,43 @@ button {
   input, select, textarea {
     font-size: 16px !important;
   }
+
+  h1 {
+    font-size: 1.8rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Extreme Narrow Screens (Galaxy J Prime, iPhone SE small) */
+@media (max-width: 380px) {
+  .nav-logo-text {
+    font-size: 0.9rem !important;
+  }
+  
+  .nav-logo-text svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .nav-actions {
+    gap: 4px !important;
+  }
+
+  .nav-actions button {
+    padding: 4px !important;
+  }
+
+  .container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* Force vertical stacking on all flex containers that might overflow */
+  .mobile-stack {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
 }

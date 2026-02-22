@@ -245,6 +245,13 @@ const App = () => {
       if (error) throw error;
       notify("Quote request cancelled.", "success");
       setRefreshTrigger((prev) => prev + 1);
+      
+      // Specifically trigger fetches to ensure UI consistency
+      if (profile?.role === "supplier") {
+        fetchSupplierData();
+      } else {
+        fetchUserData();
+      }
     } catch (err) {
       console.error("Error deleting inquiry:", err);
       notify("Failed to cancel request.", "error");
@@ -400,7 +407,8 @@ const App = () => {
   };
 
   const fetchUserData = async () => {
-    if (!session || profile?.role !== "user") return;
+    // Broaden role check to include installers/suppliers who might have customer history
+    if (!session) return;
     try {
       // Fetch saved products with product details
       const { data: savedData } = await supabase
@@ -431,7 +439,8 @@ const App = () => {
   };
 
   const fetchSupplierData = async () => {
-    if (!session || profile?.role !== "supplier") return;
+    // Include admins and installers in supplier data check if applicable
+    if (!session || (profile?.role !== "supplier" && profile?.role !== "admin")) return;
 
     try {
       // Fetch Products list
