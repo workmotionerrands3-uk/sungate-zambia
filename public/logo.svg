@@ -1,0 +1,30 @@
+<svg width="400" height="120" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sun Icon (from exact style provided) -->
+  <g transform="translate(20, 20)">
+    <!-- Orange sun center -->
+    <circle cx="40" cy="40" r="16" fill="#FF6F00"/>
+    
+    <!-- Sun rays -->
+    <rect x="38" y="5" width="4" height="12" fill="#FF6F00" rx="2"/>
+    <rect x="38" y="63" width="4" height="12" fill="#FF6F00" rx="2"/>
+    <rect x="5" y="38" width="12" height="4" fill="#FF6F00" rx="2"/>
+    <rect x="63" y="38" width="12" height="4" fill="#FF6F00" rx="2"/>
+    
+    <!-- Diagonal rays -->
+    <rect x="15" y="15" width="4" height="10" fill="#FF6F00" rx="2" transform="rotate(-45 17 20)"/>
+    <rect x="61" y="15" width="4" height="10" fill="#FF6F00" rx="2" transform="rotate(45 63 20)"/>
+    <rect x="15" y="55" width="4" height="10" fill="#FF6F00" rx="2" transform="rotate(45 17 60)"/>
+    <rect x="61" y="55" width="4" height="10" fill="#FF6F00" rx="2" transform="rotate(-45 63 60)"/>
+  </g>
+
+  <!-- SunGate Text -->
+  <text x="110" y="65" font-family="'Outfit', 'Inter', sans-serif" font-size="44" font-weight="800" fill="#0D47A1">
+    SunGate
+    <tspan fill="#FF6F00">Zambia</tspan>
+  </text>
+  
+  <!-- Slogan -->
+  <text x="110" y="88" font-family="'Inter', sans-serif" font-size="14" font-weight="600" fill="#666" style="letter-spacing: 1px;">
+    QUALITY SOLAR SOLUTIONS
+  </text>
+</svg>

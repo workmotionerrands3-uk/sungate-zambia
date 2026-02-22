@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SunGate Logo Converter</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f8f9fa; }
+        .card { background: white; padding: 30px; border-radius: 12px; display: inline-block; margin: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        button { background: #FF6F00; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px; }
+        button:hover { background: #E65100; }
+        img { max-width: 100%; height: auto; border: 1px solid #eee; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>SunGate Logo to PNG Converter</h1>
+    <p>Click the buttons below to download high-resolution PNG versions of your logos.</p>
+
+    <div class="card">
+        <h3>Full Landscape Logo</h3>
+        <img src="logo.svg" id="logo-svg">
+        <br>
+        <button onclick="downloadPNG('logo-svg', 'SunGate_Logo.png', 1200, 360)">Download PNG</button>
+    </div>
+
+    <div class="card">
+        <h3>Square Icon</h3>
+        <img src="icon.svg" id="icon-svg">
+        <br>
+        <button onclick="downloadPNG('icon-svg', 'SunGate_Icon.png', 1024, 1024)">Download PNG</button>
+    </div>
+
+    <script>
+        function downloadPNG(imgId, filename, width, height) {
+            const svgImg = document.getElementById(imgId);
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            
+            // Background is transparent in SVG, but we usually want PNGs for branding with transparency.
+            // If you want a white background, uncomment the next two lines:
+            // ctx.fillStyle = 'white';
+            // ctx.fillRect(0, 0, width, height);
+
+            ctx.drawImage(svgImg, 0, 0, width, height);
+            
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>

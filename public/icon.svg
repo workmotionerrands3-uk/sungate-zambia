@@ -1,0 +1,22 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Official Square Profile/App Icon -->
+  <rect width="512" height="512" rx="100" fill="#0D47A1" />
+
+  <!-- Sun Icon (Centered) -->
+  <g transform="translate(106, 106) scale(3.75)">
+    <!-- Orange sun center -->
+    <circle cx="40" cy="40" r="16" fill="#FF6F00"/>
+    
+    <!-- Sun rays -->
+    <rect x="38" y="5" width="4" height="12" fill="#FF6F00" rx="2"/>
+    <rect x="38" y="63" width="4" height="12" fill="#FF6F00" rx="2"/>
+    <rect x="5" y="38" width="12" height="4" fill="#FF6F00" rx="2"/>
+    <rect x="63" y="38" width="12" height="4" fill="#FF6F00" rx="2"/>
+    
+    <!-- Diagonal rays -->
+    <rect x="15" y="15" width="4" height="10" fill="#FF6F00" rx="2" transform="rotate(-45 17 20)"/>
+    <rect x="61" y="15" width="4" height="10" fill="#FF6F00" rx="2" transform="rotate(45 63 20)"/>
+    <rect x="15" y="55" width="4" height="10" fill="#FF6F00" rx="2" transform="rotate(45 17 60)"/>
+    <rect x="61" y="55" width="4" height="10" fill="#FF6F00" rx="2" transform="rotate(-45 63 60)"/>
+  </g>
+</svg>
