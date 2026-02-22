@@ -199,28 +199,28 @@ const StandardNavbar = ({
             style={{ display: "flex", flexDirection: "column", gap: "24px" }}
           >
             <a
-              href="#calculator"
+              href="/#calculator"
               onClick={() => setIsOpen(false)}
               style={{ fontSize: "1.1rem", fontWeight: 600 }}
             >
               Solar Calculator
             </a>
             <a
-              href="#marketplace"
+              href="/#marketplace"
               onClick={() => setIsOpen(false)}
               style={{ fontSize: "1.1rem", fontWeight: 600 }}
             >
               Marketplace
             </a>
             <a
-              href="#installers"
+              href="/#installers"
               onClick={() => setIsOpen(false)}
               style={{ fontSize: "1.1rem", fontWeight: 600 }}
             >
               Installer Directory
             </a>
             <a
-              href="#blog"
+              href="/#blog"
               onClick={() => setIsOpen(false)}
               style={{ fontSize: "1.1rem", fontWeight: 600 }}
             >

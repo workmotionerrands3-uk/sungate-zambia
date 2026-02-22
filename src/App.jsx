@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import QuoteRequestPrint from "./components/QuoteRequestPrint.jsx";
 import {
   Sun,
@@ -84,9 +84,10 @@ const App = () => {
   const openAuthWithRole = (role, planName = null, price = null) => {
     if (session) {
       // If logged in, redirect to WhatsApp for payment/upgrade
+      const userName = profile?.full_name || session.user.user_metadata?.full_name || "Partner";
       const message = planName 
-        ? `Hi SunGate! I want to subscribe to the ${planName} plan for ${role}. My email is ${session.user.email}.`
-        : `Hi SunGate! I'm interested in the ${role} partnership. My email is ${session.user.email}.`;
+        ? `Hi SunGate! My name is ${userName}. I want to subscribe to the ${planName} plan for ${role}.`
+        : `Hi SunGate! My name is ${userName}. I'm interested in the ${role} partnership.`;
       
       const whatsappUrl = `https://wa.me/${siteSettings.support_phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
@@ -508,6 +509,21 @@ const App = () => {
     }
   }, [session, profile, refreshTrigger]);
 
+  const location = useLocation();
+
+  useEffect(() => {
+    // Handle hash scrolling (e.g., /#calculator)
+    if (location.hash) {
+      const id = location.hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location.pathname, location.hash]);
+
   useEffect(() => {
     fetchSiteSettings();
   }, []);
@@ -546,6 +562,10 @@ const App = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth event:", event);
+      
+      // CRITICAL: Update session immediately to fix login/logout lag
+      setSession(session);
+
       if (event === "PASSWORD_RECOVERY") {
         setPasswordRecoveryMode(true);
       }
@@ -560,8 +580,9 @@ const App = () => {
             const { role, planName } = JSON.parse(pendingPlan);
             localStorage.removeItem('pending_plan');
             
-            // Redirect to WhatsApp
-            const message = `Hi SunGate! I just signed up and want to subscribe to the ${planName} plan for ${role}. My email is ${session.user.email}.`;
+            // Redirect to WhatsApp - use metadata name if profile isn't fetched yet
+            const userName = session.user.user_metadata?.full_name || "New Partner";
+            const message = `Hi SunGate! My name is ${userName}. I just signed up and want to subscribe to the ${planName} plan for ${role}.`;
             const whatsappUrl = `https://wa.me/${siteSettings.support_phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
             
             // Short delay to ensure session is fully processed
