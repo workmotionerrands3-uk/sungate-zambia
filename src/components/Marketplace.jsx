@@ -181,11 +181,11 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
         <section id="marketplace" style={{ padding: 'var(--section-padding)', background: '#fcfcfd' }}>
             <div className="container">
                 {/* Header Section */}
-                <div style={{ marginBottom: '40px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '20px' }}>
+                <div style={{ marginBottom: '40px' }} className="mobile-center">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '20px' }} className="mobile-center mobile-stack">
                         <div>
-                            <h2 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--trust-blue)', letterSpacing: '-0.02em' }}>Solar Marketplace</h2>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Certified equipment for the Zambian climate.</p>
+                            <h2 style={{ fontWeight: 800, color: 'var(--trust-blue)', letterSpacing: '-0.02em' }}>Solar Marketplace</h2>
+                            <p style={{ color: 'var(--text-muted)' }}>Certified equipment for the Zambian climate.</p>
                         </div>
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <div className="badge" style={{ background: '#eef2ff', color: 'var(--trust-blue)', border: '1px solid #e0e7ff', padding: '8px 16px', borderRadius: '12px', fontWeight: 600 }}>
@@ -199,9 +199,8 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '32px' }}>
                     
                     {/* Desktop Sidebar / Filter Section */}
-                    <aside style={{ 
+                    <aside className="sidebar-desktop" style={{ 
                         gridColumn: 'span 3', 
-                        display: typeof window !== 'undefined' && window.innerWidth < 1024 ? 'none' : 'block',
                         position: 'sticky',
                         top: '100px',
                         height: 'fit-content'
@@ -293,11 +292,10 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                     </aside>
 
                     {/* Main Products Area */}
-                    <main style={{ gridColumn: typeof window !== 'undefined' && window.innerWidth < 1024 ? 'span 12' : 'span 9' }}>
+                    <main className="marketplace-main-content">
                         
                         {/* Mobile Category & Filter Bar */}
-                        <div style={{ 
-                            display: typeof window !== 'undefined' && window.innerWidth < 1024 ? 'flex' : 'none',
+                        <div className="mobile-only-filters" style={{ 
                             flexDirection: 'column',
                             gap: '16px',
                             marginBottom: '24px'
@@ -349,8 +347,7 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                         </div>
 
                         {/* Top Control Bar (Desktop) */}
-                        <div style={{ 
-                            display: typeof window !== 'undefined' && window.innerWidth < 1024 ? 'none' : 'flex',
+                        <div className="desktop-only-controls" style={{ 
                             justifyContent: 'flex-end',
                             marginBottom: '24px'
                         }}>
@@ -375,7 +372,7 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                         </div>
 
                         {/* Product Grid */}
-                        <div className="grid grid-3" style={{ gap: '24px' }}>
+                        <div className="grid grid-3 marketplace-grid" style={{ gap: '24px' }}>
                             {loading ? (
                                 <div style={{ gridColumn: 'span 3', textAlign: 'center', padding: '100px 0' }}>
                                     <div className="spinner" style={{ marginBottom: '20px' }}></div>
@@ -392,7 +389,7 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                     <button onClick={() => {setFilter('All'); setSearchQuery(''); setPriceRange('all')}} style={{ marginTop: '16px', color: 'var(--trust-blue)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>Clear all filters</button>
                                 </div>
                             ) : filteredProducts.map(product => (
-                                <div key={product.id} style={{
+                                <div key={product.id} className="product-card" style={{
                                     background: 'white', borderRadius: 'var(--radius-md)', overflow: 'hidden',
                                     boxShadow: 'var(--shadow-sm)', border: '1px solid #eee', position: 'relative',
                                     display: 'flex', flexDirection: 'column'
@@ -419,6 +416,7 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                         <img
                                             src={product.image}
                                             alt={product.name}
+                                            className="product-image"
                                             style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
                                             onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
                                             onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}

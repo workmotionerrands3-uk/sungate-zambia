@@ -521,7 +521,7 @@ const AdminDashboard = ({ profile }) => {
 
                 {!loading && activeTab === 'inquiries' && (
                     <>
-                        <div className="grid grid-2">
+                        <div className="grid grid-2 admin-inquiries-grid">
                             {inquiries.map(inquiry => {
                                 // Parser for our "No-SQL" packed message
                                 const parseMessage = (msg) => {
@@ -558,8 +558,8 @@ const AdminDashboard = ({ profile }) => {
 
                 {!loading && activeTab === 'users' && (
                     <>
-                        <div style={{ background: 'white', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <div style={{ overflowX: 'auto', background: 'white', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', WebkitOverflowScrolling: 'touch' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
                                 <thead style={{ background: '#f8f9fa' }}>
                                     <tr>
                                         <th style={{ padding: '16px', textAlign: 'left', fontWeight: 'bold', color: '#444' }}>User ID</th>
@@ -619,7 +619,7 @@ const AdminDashboard = ({ profile }) => {
 
                 {!loading && activeTab === 'analytics' && analytics && (
                     <>
-                        <div className="grid grid-2">
+                        <div className="grid grid-2 admin-analytics-grid">
                             <div style={{ background: 'white', padding: '24px', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '20px' }}>
                                 <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#e3f2fd', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <Search size={24} color="#1976d2" />
@@ -750,8 +750,8 @@ const AdminDashboard = ({ profile }) => {
                 )}
 
                 {!loading && activeTab === 'logs' && (
-                    <div style={{ background: 'white', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <div style={{ overflowX: 'auto', background: 'white', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', WebkitOverflowScrolling: 'touch' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
                             <thead style={{ background: '#f8f9fa' }}>
                                 <tr>
                                     <th style={{ padding: '16px', textAlign: 'left', fontWeight: 'bold' }}>Time</th>

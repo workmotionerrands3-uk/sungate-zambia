@@ -37,9 +37,10 @@ const UserDashboard = ({
         </div>
       </div>
 
-      <div className="grid grid-3" style={{ gap: "24px" }}>
+      <div className="user-dashboard-grid transition-all">
         {/* 1. Calculator History */}
         <div
+          className="savings-card dashboard-card"
           style={{
             background: "white",
             padding: "24px",
@@ -166,6 +167,7 @@ const UserDashboard = ({
 
         {/* 2. Wishlist */}
         <div
+          className="wishlist-card dashboard-card"
           style={{
             background: "white",
             padding: "24px",
@@ -293,6 +295,7 @@ const UserDashboard = ({
 
         {/* 3. Quote Requests */}
         <div
+          className="quotes-card dashboard-card"
           style={{
             background: "white",
             padding: "24px",
@@ -495,6 +498,7 @@ const UserDashboard = ({
         {/* 4. Partner Opportunity */}
         {profile?.role === "user" && (
           <div
+            className="dashboard-card dashboard-card-wide"
             style={{
               background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
               padding: "24px",
