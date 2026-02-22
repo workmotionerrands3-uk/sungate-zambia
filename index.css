@@ -157,21 +157,54 @@ button {
   p { font-size: 1rem !important; }
 
   /* Marketplace / Grids */
-  .grid-2, .grid-3, .grid-4 {
+  .grid-2 {
     grid-template-columns: 1fr !important;
-    gap: 16px !important;
+  }
+
+  .grid-3, .grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .marketplace-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+    gap: 12px !important;
   }
 
   /* Product Cards */
   .product-card {
     width: 100% !important;
     margin: 0 !important;
+    padding: 10px !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-card h3 {
+    font-size: 0.95rem !important;
+    min-height: 2.4rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .product-image-container {
+    aspect-ratio: 4/3 !important;
+    height: auto !important;
   }
 
   .product-image {
     width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #f8f9fa;
+  }
+
+  .product-card table {
+    font-size: 0.75rem !important;
+    margin-bottom: 10px !important;
+  }
+
+  .product-card .price {
+    font-size: 1.1rem !important;
   }
 
   /* Dashboard Cards */
@@ -189,9 +222,9 @@ button {
   /* Buttons */
   .btn, button.btn-primary, button.btn-secondary {
     width: 100% !important;
-    padding: 14px !important;
-    min-height: 48px; /* Better touch target */
-    font-size: 1.05rem !important;
+    padding: 10px !important;
+    min-height: 44px; /* Standard touch target */
+    font-size: 0.9rem !important;
     justify-content: center !important;
   }
 
@@ -251,6 +284,21 @@ button {
   .marketplace-main-content {
     grid-column: span 12;
   }
+
+  /* Navbar mobile refinements */
+  .nav-logo-text {
+    font-size: 1.1rem !important;
+    gap: 4px !important;
+  }
+  
+  .nav-logo-text svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .nav-actions {
+    gap: 6px !important;
+  }
 }
 
 /* User Dashboard Responsive Fixes */
@@ -267,5 +315,26 @@ button {
   
   .dashboard-card-wide {
     grid-column: span 1 !important;
+  }
+}
+
+/* Global Mobile Fixes to prevent overflow */
+@media (max-width: 640px) {
+  * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .container {
+    overflow-x: hidden !important;
+  }
+  
+  img {
+    height: auto;
+  }
+  
+  /* Ensure inputs don't zoom on iOS */
+  input, select, textarea {
+    font-size: 16px !important;
   }
 }

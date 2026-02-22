@@ -412,7 +412,7 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                         </div>
                                     )}
 
-                                    <div style={{ width: '100%', aspectRatio: '1/1', background: '#f5f5f5', overflow: 'hidden' }}>
+                                    <div className="product-image-container" style={{ width: '100%', aspectRatio: '1/1', background: '#f5f5f5', overflow: 'hidden', position: 'relative' }}>
                                         <img
                                             src={product.image}
                                             alt={product.name}
@@ -450,14 +450,14 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                         </table>
 
                                         <div style={{ marginTop: 'auto' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--trust-blue)' }}>{product.price}</div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }} className="mobile-stack">
+                                                <div className="price" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--trust-blue)' }}>{product.price}</div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', color: 'var(--zambia-green)' }}>
                                                     <CheckCircle size={14} /> In Stock
                                                 </div>
                                             </div>
 
-                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                            <div style={{ display: 'flex', gap: '8px' }} className="mobile-stack">
                                                 <button
                                                     onClick={() => handleRequestQuote(product)}
                                                     className="btn btn-primary"
@@ -467,6 +467,7 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                                 </button>
                                                 <button
                                                     onClick={() => handleAddToCart(product)}
+                                                    className="btn"
                                                     style={{ padding: '10px', borderRadius: 'var(--radius-md)', border: '1px solid #ddd', background: 'white' }}
                                                 >
                                                     <ShoppingCart size={18} />

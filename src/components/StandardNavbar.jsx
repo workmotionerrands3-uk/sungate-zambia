@@ -33,13 +33,14 @@ const StandardNavbar = ({
         }}
       >
         <div
+          className="nav-logo-text"
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
             fontWeight: 800,
-            fontSize: "1.5rem",
-            color: "var(--trust-blue)",
+            fontSize: '1.5rem',
+            color: 'var(--trust-blue)',
           }}
         >
           <Sun size={32} color="var(--sun-orange)" fill="var(--sun-gold)" />
