@@ -196,10 +196,10 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                 </div>
 
                 {/* Main Content Layout */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '32px' }}>
+                <div className="marketplace-layout-grid">
                     
                     {/* Desktop Sidebar / Filter Section */}
-                    <aside className="sidebar-desktop" style={{ 
+                    <aside className="sidebar-desktop sidebar-filters" style={{ 
                         gridColumn: 'span 3', 
                         position: 'sticky',
                         top: '100px',
@@ -500,15 +500,16 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
             {showMobileFilters && (
                 <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }}>
                     <div 
+                        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} 
                         onClick={() => setShowMobileFilters(false)}
-                        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', cursor: 'pointer' }}
                     />
                     <div style={{ 
-                        position: 'absolute', inset: '0 0 0 20%', background: 'white', padding: '24px',
+                        position: 'absolute', right: 0, top: 0, bottom: 0, width: '280px', 
+                        background: 'white', padding: '24px', overflowY: 'auto',
                         display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '-4px 0 10px rgba(0,0,0,0.1)'
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ fontWeight: 800 }}>Filters</h3>
+                            <h3 style={{ fontWeight: 800, margin: 0 }}>Filters</h3>
                             <button onClick={() => setShowMobileFilters(false)} style={{ background: 'none', border: 'none' }}><X size={24} /></button>
                         </div>
                         

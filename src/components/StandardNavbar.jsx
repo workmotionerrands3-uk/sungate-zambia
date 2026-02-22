@@ -45,7 +45,7 @@ const StandardNavbar = ({
         >
           <Sun size={32} color="var(--sun-orange)" fill="var(--sun-gold)" />
           <span>
-            SunGate <span style={{ color: "var(--zambia-green)" }}>Zambia</span>
+            SunGate <span className="logo-zambia" style={{ color: "var(--zambia-green)" }}>Zambia</span>
           </span>
         </div>
 
@@ -123,7 +123,8 @@ const StandardNavbar = ({
                 style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
                 <div
-                  style={{ textAlign: "right", display: "none", md: "block" }}
+                  className="profile-details-desktop"
+                  style={{ textAlign: "right" }}
                 >
                   <div
                     style={{
