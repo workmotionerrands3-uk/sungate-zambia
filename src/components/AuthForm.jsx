@@ -12,6 +12,31 @@ const AuthForm = ({ onClose, onAuthComplete, isFullPage = false, isUpdatePasswor
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState({ type: '', text: '' })
 
+    const handleGoogleLogin = async () => {
+        setLoading(true)
+        setMessage({ type: '', text: '' })
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin,
+                    data: {
+                      role: role,
+                      full_name: 'Google User' // Fallback, Google usually provides this
+                    },
+                    queryParams: {
+                        access_type: 'offline',
+                        prompt: 'consent',
+                    },
+                },
+            })
+            if (error) throw error
+        } catch (err) {
+            setMessage({ type: 'error', text: err.message })
+            setLoading(false)
+        }
+    }
+
     const handleAuth = async (e) => {
         e.preventDefault()
         setLoading(true)
@@ -115,6 +140,46 @@ const AuthForm = ({ onClose, onAuthComplete, isFullPage = false, isUpdatePasswor
                             {isUpdatePassword ? 'Enter your new password below' : (isForgotPassword ? 'Enter your email to receive a reset link' : (isLogin ? 'Access your solar dashboard' : 'Join the SunGate Zambia network'))}
                         </p>
                     </div>
+
+                    {!isForgotPassword && !isUpdatePassword && (
+                        <>
+                            <button
+                                type="button"
+                                onClick={handleGoogleLogin}
+                                disabled={loading}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ddd',
+                                    background: 'white',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '12px',
+                                    fontWeight: '600',
+                                    color: '#444',
+                                    marginBottom: '20px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 18 18">
+                                    <path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84a4.14 4.14 0 0 1-1.8 2.71v2.26h2.91c1.7-1.57 2.69-3.88 2.69-6.62z" fill="#4285F4" />
+                                    <path d="M9 18c2.43 0 4.47-.81 5.96-2.18l-2.91-2.26c-.81.54-1.85.86-3.05.86-2.34 0-4.33-1.58-5.04-3.7H.95v2.33A8.99 8.99 0 0 0 9 18z" fill="#34A853" />
+                                    <path d="M3.96 10.72A5.41 5.41 0 0 1 3.65 9c0-.6.1-1.19.29-1.72V4.95H.95A8.99 8.99 0 0 0 .95 13.05l3.01-2.33z" fill="#FBBC05" />
+                                    <path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A8.96 8.96 0 0 0 9 0 8.99 8.99 0 0 0 .95 4.95l3.01 2.33c.71-2.12 2.7-3.7 5.04-3.7z" fill="#EA4335" />
+                                </svg>
+                                Continue with Google
+                            </button>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+                                <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
+                                <span style={{ fontSize: '0.8rem', color: '#888', fontWeight: '500' }}>OR</span>
+                                <div style={{ flex: 1, height: '1px', background: '#eee' }}></div>
+                            </div>
+                        </>
+                    )}
 
                     {!isLogin && !isForgotPassword && !isUpdatePassword && (
                         <div style={{
