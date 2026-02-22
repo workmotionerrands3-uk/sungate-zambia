@@ -80,8 +80,25 @@ const App = () => {
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState(null);
 
-  // Helper to trigger auth
-  const openAuthWithRole = (role) => {
+  // Enhanced helper to trigger auth or redirect to WhatsApp
+  const openAuthWithRole = (role, planName = null, price = null) => {
+    if (session) {
+      // If logged in, redirect to WhatsApp for payment/upgrade
+      const message = planName 
+        ? `Hi SunGate! I want to subscribe to the ${planName} plan for ${role}. My email is ${session.user.email}.`
+        : `Hi SunGate! I'm interested in the ${role} partnership. My email is ${session.user.email}.`;
+      
+      const whatsappUrl = `https://wa.me/${siteSettings.support_phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      notify("Redirecting to WhatsApp for payment...", "info");
+      return;
+    }
+    
+    // Store plan data if user is signing up
+    if (planName) {
+      localStorage.setItem('pending_plan', JSON.stringify({ role, planName, price }));
+    }
+    
     setInitialAuthRole(role);
     setShowAuth(true);
   };
@@ -533,9 +550,29 @@ const App = () => {
         setPasswordRecoveryMode(true);
       }
 
-      setSession(session);
       if (session) {
         fetchProfile(session.user.id);
+        
+        // Handle pending plan redirection after sign-up
+        const pendingPlan = localStorage.getItem('pending_plan');
+        if (pendingPlan) {
+          try {
+            const { role, planName } = JSON.parse(pendingPlan);
+            localStorage.removeItem('pending_plan');
+            
+            // Redirect to WhatsApp
+            const message = `Hi SunGate! I just signed up and want to subscribe to the ${planName} plan for ${role}. My email is ${session.user.email}.`;
+            const whatsappUrl = `https://wa.me/${siteSettings.support_phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+            
+            // Short delay to ensure session is fully processed
+            setTimeout(() => {
+              window.open(whatsappUrl, '_blank');
+              notify("Account created! Redirecting to WhatsApp for payment...", "success");
+            }, 1000);
+          } catch (e) {
+            console.error("Failed to process pending plan", e);
+          }
+        }
       } else {
         setProfile(null);
         setCartItems([]); // Clear UI state on logout
@@ -543,7 +580,7 @@ const App = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [siteSettings.support_phone]);
 
   const handleRoleUpgrade = async (newRole) => {
     if (!session) return;
@@ -680,7 +717,7 @@ const App = () => {
           {/* Root Route: Landing Page or Role-Based Dashboard */}
           <Route path="/" element={
             !session ? (
-              <LandingPage onAuthClick={openAuthWithRole} />
+              <LandingPage onAuthClick={openAuthWithRole} session={session} />
             ) : (
               <>
                 {profile?.role === "admin" ? (
@@ -707,6 +744,7 @@ const App = () => {
                     setPdfUrl={setPdfUrl}
                     setShowPdfModal={setShowPdfModal}
                     onRoleUpgrade={handleRoleUpgrade}
+                    onAuthClick={openAuthWithRole}
                   />
                 )}
                 
@@ -739,7 +777,7 @@ const App = () => {
           } />
 
           {/* Public Marketing Routes */}
-          <Route path="/partners" element={<PartnerLanding onAuthClick={openAuthWithRole} />} />
+          <Route path="/partners" element={<PartnerLanding session={session} profile={profile} onAuthClick={openAuthWithRole} />} />
           <Route path="/calculator" element={<PublicCalculator onAuthClick={openAuthWithRole} />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/help" element={<HelpCenterPage />} />

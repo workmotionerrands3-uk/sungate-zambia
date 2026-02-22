@@ -142,24 +142,33 @@ const SupplierDashboard = ({
                     >
                       {iq.products?.name}
                     </span>
-                    <select
-                      value={iq.status}
-                      onChange={(e) =>
-                        onUpdateInquiryStatus(iq.id, e.target.value)
-                      }
-                      style={{
-                        padding: "4px 8px",
-                        borderRadius: "6px",
-                        border: "1px solid #ddd",
-                        fontSize: "0.75rem",
-                        fontWeight: 700,
-                      }}
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="quoted">Quoted</option>
-                      <option value="completed">Completed</option>
-                    </select>
-                  </div>
+                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <select
+                          value={iq.status}
+                          onChange={(e) =>
+                            onUpdateInquiryStatus(iq.id, e.target.value)
+                          }
+                          style={{
+                            padding: "4px 8px",
+                            borderRadius: "6px",
+                            border: "1px solid #ddd",
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                          }}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="quoted">Quoted</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                        <button 
+                          onClick={() => { if(confirm("Are you sure you want to delete this inquiry?")) onUpdateInquiryStatus(iq.id, 'cancelled') }}
+                          title="Cancel Inquiry"
+                          style={{ background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer', padding: '4px' }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
                   <div style={{ fontSize: "0.85rem", marginBottom: "8px" }}>
                     <strong>From:</strong> {iq.buyer?.full_name} ({iq.buyer?.email})
                   </div>

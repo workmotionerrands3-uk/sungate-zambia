@@ -1,7 +1,7 @@
 import React from 'react'
 import { ArrowRight, ShieldCheck, TrendingUp, Users, Building, Wrench, CheckCircle, Store, Zap } from 'lucide-react'
 
-const PartnerOnboarding = ({ onMemberClick }) => {
+const PartnerOnboarding = ({ onMemberClick, session }) => {
     return (
         <section id="partners" style={{ background: '#fff' }}>
             {/* Hero Section */}
@@ -31,18 +31,19 @@ const PartnerOnboarding = ({ onMemberClick }) => {
                     </p>
                     <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
                         <button 
-                            onClick={() => onMemberClick('installer')} 
+                            onClick={() => onMemberClick('installer', 'Installer Partnership')} 
                             className="btn btn-primary" 
                             style={{ padding: '16px 32px', fontSize: '1.1rem' }}
                         >
-                            Become an Installer <ArrowRight size={20} style={{ marginLeft: '8px' }} />
+                            {session ? 'Upgrade to Installer' : 'Become an Installer'} 
+                            <ArrowRight size={20} style={{ marginLeft: '8px' }} />
                         </button>
                         <button 
-                            onClick={() => onMemberClick('supplier')} 
+                            onClick={() => onMemberClick('supplier', 'Supplier Partnership')} 
                             className="btn btn-secondary" 
                             style={{ padding: '16px 32px', fontSize: '1.1rem', background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
                         >
-                            Register as Supplier
+                            {session ? 'Register as Supplier' : 'Join as Supplier'}
                         </button>
                     </div>
                 </div>
@@ -120,11 +121,11 @@ const PartnerOnboarding = ({ onMemberClick }) => {
                                 ))}
                             </ul>
                             <button 
-                                onClick={() => onMemberClick('installer')} 
+                                onClick={() => onMemberClick('installer', 'Installer Pro Listing')} 
                                 className="btn btn-primary" 
                                 style={{ width: '100%', padding: '14px' }}
                             >
-                                Join as Installer
+                                {session ? 'Upgrade Installer Profile' : 'Join as Installer'}
                             </button>
                         </div>
 
@@ -150,11 +151,11 @@ const PartnerOnboarding = ({ onMemberClick }) => {
                                 ))}
                             </ul>
                             <button 
-                                onClick={() => onMemberClick('supplier')} 
+                                onClick={() => onMemberClick('supplier', 'Supplier Marketplace Listing')} 
                                 className="btn btn-secondary" 
                                 style={{ width: '100%', padding: '14px' }}
                             >
-                                Join as Supplier
+                                {session ? 'Register Supplier Shop' : 'Join as Supplier'}
                             </button>
                         </div>
                     </div>
@@ -194,7 +195,7 @@ const PartnerOnboarding = ({ onMemberClick }) => {
                 <div className="container">
                     <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '24px' }}>Ready to power Zambia together?</h2>
                     <button 
-                        onClick={() => onMemberClick('installer')} 
+                        onClick={() => onMemberClick('installer', 'Global Ecosystem Partnership')} 
                         className="btn btn-primary" 
                         style={{ padding: '16px 40px' }}
                     >

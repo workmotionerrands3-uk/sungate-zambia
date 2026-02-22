@@ -1,4 +1,5 @@
 import { Calculator, Trash2, Heart, MessageCircle, Award } from "lucide-react";
+import PromotionBanner from "../PromotionBanner";
 
 const UserDashboard = ({
   profile,
@@ -11,6 +12,7 @@ const UserDashboard = ({
   setPdfUrl,
   setShowPdfModal,
   onRoleUpgrade,
+  onAuthClick
 }) => (
   <section
     style={{
@@ -19,6 +21,11 @@ const UserDashboard = ({
     }}
   >
     <div className="container">
+      {/* Promotion Banner for regular users */}
+      {profile?.role === 'user' && (
+        <PromotionBanner onUpgrade={() => onAuthClick('installer', 'Professional Installer Plan')} />
+      )}
+
       <div
         style={{
           display: "flex",
@@ -502,50 +509,7 @@ const UserDashboard = ({
           )}
         </div>
 
-        {/* 4. Partner Opportunity */}
-        {profile?.role === "user" && (
-          <div
-            className="dashboard-card dashboard-card-wide"
-            style={{
-              background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-              padding: "24px",
-              borderRadius: "16px",
-              color: "white",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              gridColumn: "span 3"
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-              <div style={{ background: "rgba(255,255,255,0.1)", padding: "10px", borderRadius: "12px" }}>
-                <Award size={24} color="var(--sun-orange)" />
-              </div>
-              <h3 style={{ margin: 0, fontSize: "1.25rem", color: "white" }}>Professional Account Upgrade</h3>
-            </div>
-            
-            <p style={{ opacity: 0.8, fontSize: "0.95rem", marginBottom: "24px", maxWidth: "800px" }}>
-              Are you a solar equipment supplier or a certified installer? Upgrade your account to access professional tools, list products, and connect with customers across Zambia.
-            </p>
-
-            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-              <button 
-                onClick={() => onRoleUpgrade("supplier")}
-                className="btn btn-primary" 
-                style={{ padding: "12px 24px" }}
-              >
-                Become a Supplier
-              </button>
-              <button 
-                onClick={() => onRoleUpgrade("installer")}
-                className="btn" 
-                style={{ padding: "12px 24px", background: "rgba(255,255,255,0.1)", color: "white", border: "1px solid rgba(255,255,255,0.2)" }}
-              >
-                Become an Installer
-              </button>
-            </div>
-          </div>
-        )}
+        {/* End of Dashboard Grid */}
       </div>
     </div>
   </section>

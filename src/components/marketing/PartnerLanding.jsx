@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Target, Users, Medal, Wallet, Zap, ShieldCheck, ArrowRight, Check } from 'lucide-react';
+import PromotionBanner from '../PromotionBanner';
 
 const PricingTier = ({ name, price, features, highlighted, onSignup }) => (
   <div style={{
@@ -54,7 +55,7 @@ const PricingTier = ({ name, price, features, highlighted, onSignup }) => (
   </div>
 );
 
-const PartnerLanding = ({ type: propsType, onAuthClick }) => {
+const PartnerLanding = ({ type: propsType, onAuthClick, session, profile }) => {
   const [searchParams] = useSearchParams();
   const typeFromQuery = searchParams.get('type');
   const type = typeFromQuery || propsType || 'installer';
@@ -99,11 +100,11 @@ const PartnerLanding = ({ type: propsType, onAuthClick }) => {
             Join Zambia's fastest-growing solar platform and grow your business today.
           </p>
           <button 
-            onClick={() => onAuthClick(isInstaller ? 'installer' : 'supplier')}
+            onClick={() => onAuthClick(isInstaller ? 'installer' : 'supplier', 'General Partnership')}
             className="btn" 
             style={{ background: 'white', color: isInstaller ? 'var(--trust-blue)' : 'var(--sun-orange)', padding: '16px 32px' }}
           >
-            Create {isInstaller ? 'Installer' : 'Supplier'} Account
+            {session ? 'Upgrade My Account' : `Create ${isInstaller ? 'Installer' : 'Supplier'} Account`}
             <ArrowRight size={20} style={{ marginLeft: '8px' }} />
           </button>
         </div>
@@ -137,27 +138,20 @@ const PartnerLanding = ({ type: propsType, onAuthClick }) => {
           </div>
           <div className="grid grid-3" style={{ gap: '30px', maxWidth: '1100px', margin: '0 auto' }}>
             {pricing.map((p, idx) => (
-              <PricingTier key={idx} {...p} onSignup={() => onAuthClick(isInstaller ? 'installer' : 'supplier')} />
+              <PricingTier 
+                key={idx} 
+                {...p} 
+                onSignup={() => onAuthClick(isInstaller ? 'installer' : 'supplier', p.name, p.price)} 
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Form CTA */}
-      <section style={{ padding: '100px 0', textAlign: 'center' }}>
-        <div className="container" style={{ maxWidth: '700px' }}>
-          <h2 style={{ fontSize: '2.5rem', marginBottom: '24px' }}>Ready to Grow?</h2>
-          <p style={{ color: '#666', marginBottom: '40px', fontSize: '1.1rem' }}>
-            Complete your profile in minutes and start receiving 
-            {isInstaller ? ' highly qualified leads' : ' customer inquiries'} today.
-          </p>
-          <button 
-            onClick={() => onAuthClick(isInstaller ? 'installer' : 'supplier')}
-            className="btn btn-primary" 
-            style={{ padding: '18px 48px', fontSize: '1.1rem' }}
-          >
-            Get Started Now
-          </button>
+      {/* Form CTA - Replaced with PromotionBanner */}
+      <section style={{ padding: '60px 0' }}>
+        <div className="container">
+          <PromotionBanner onUpgrade={() => onAuthClick(isInstaller ? 'installer' : 'supplier', 'Professional Partnership Plan')} />
         </div>
       </section>
     </div>

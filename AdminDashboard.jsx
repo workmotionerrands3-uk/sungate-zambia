@@ -316,6 +316,7 @@ const AdminDashboard = ({ profile }) => {
             else if (activeTab === 'articles') table = 'articles'
             else if (activeTab === 'suppliers') table = 'suppliers'
             else if (activeTab === 'products') table = 'products'
+            else if (activeTab === 'inquiries') table = 'inquiries'
             else return
             const { error } = await supabase.from(table).delete().eq('id', id)
             if (error) throw error
@@ -536,6 +537,7 @@ const AdminDashboard = ({ profile }) => {
                                         </div>
                                         <div style={{ display: 'flex', gap: '10px' }}>
                                             <button onClick={() => openModal(inquiry)} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>Manage Quote</button>
+                                            <button onClick={() => handleDelete(inquiry.id)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #fee', background: '#ffebee', color: 'red' }}><Trash2 size={16} /></button>
                                         </div>
                                     </div>
                                 )
