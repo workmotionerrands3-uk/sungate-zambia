@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { ShieldCheck, Filter, ShoppingCart, Info, CheckCircle, Heart, Search, LayoutGrid, Box, Battery, Zap, Droplets, Sun, Waves, ArrowUpDown, SlidersHorizontal, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
@@ -15,7 +15,7 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
     const [sortBy, setSortBy] = useState('newest') // newest, priceLow, priceHigh
     const [showMobileFilters, setShowMobileFilters] = useState(false)
     const [isFilterVisible, setIsFilterVisible] = useState(true)
-    const [lastScrollY, setLastScrollY] = useState(0)
+    const lastScrollY = useRef(0)
 
     const handleRequestQuote = (product) => {
         if (!session) {
@@ -110,19 +110,22 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            if (currentScrollY > lastScrollY && currentScrollY > 200) {
+            
+            // Hide threshold: Only hide after scrolling down 50px
+            // Show threshold: Always show when scrolling up
+            if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
                 // Scrolling down - hide filters
-                setIsFilterVisible(false);
-            } else if (currentScrollY < lastScrollY) {
+                if (isFilterVisible) setIsFilterVisible(false);
+            } else if (currentScrollY < lastScrollY.current) {
                 // Scrolling up - show filters
-                setIsFilterVisible(true);
+                if (!isFilterVisible) setIsFilterVisible(true);
             }
-            setLastScrollY(currentScrollY);
+            lastScrollY.current = currentScrollY;
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
+    }, [isFilterVisible]);
 
     useEffect(() => {
         fetchProducts()
@@ -321,14 +324,15 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                             position: 'sticky',
                             top: '80px',
                             zIndex: 900,
-                            background: 'rgba(255,255,255,0.95)',
-                            padding: '12px 0',
-                            backdropFilter: 'blur(8px)',
+                            background: 'white',
+                            padding: '16px 8px',
+                            boxShadow: isFilterVisible ? '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)' : 'none',
                             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                            transform: isFilterVisible ? 'translateY(0)' : 'translateY(-100px)',
+                            transform: isFilterVisible ? 'translateY(0)' : 'translateY(-150px)',
                             opacity: isFilterVisible ? 1 : 0,
                             pointerEvents: isFilterVisible ? 'auto' : 'none',
-                            marginTop: '-12px'
+                            marginTop: '-12px',
+                            borderRadius: '0 0 16px 16px'
                         }}>
                             <div style={{ display: 'flex', overflowX: 'auto', gap: '8px', paddingBottom: '8px' }} className="no-scrollbar">
                                 {categories.map(cat => {

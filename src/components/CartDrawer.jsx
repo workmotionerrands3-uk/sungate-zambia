@@ -1,7 +1,7 @@
 import React from 'react'
 import { X, Trash2, ShoppingBag, ArrowRight } from 'lucide-react'
 
-const CartDrawer = ({ isOpen, onClose, items, onRemove, onNotify, onQuoteRequest }) => {
+const CartDrawer = ({ isOpen, onClose, items, onRemove, onClear, onNotify, onQuoteRequest }) => {
     const total = items.reduce((sum, item) => {
         // Extract numeric price from string like "K5,500" or "K12,000"
         const numPrice = parseInt(item.price.toString().replace(/[^0-9]/g, ''))
@@ -34,9 +34,23 @@ const CartDrawer = ({ isOpen, onClose, items, onRemove, onNotify, onQuoteRequest
                             {items.length}
                         </span>
                     </div>
-                    <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
-                        <X size={24} />
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {items.length > 0 && (
+                            <button 
+                                onClick={onClear}
+                                style={{
+                                    background: 'none', border: 'none', color: '#ff4d4d', 
+                                    fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
+                                    padding: '4px 8px', borderRadius: '4px'
+                                }}
+                            >
+                                Clear All
+                            </button>
+                        )}
+                        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
+                            <X size={24} />
+                        </button>
+                    </div>
                 </div>
 
                 <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>

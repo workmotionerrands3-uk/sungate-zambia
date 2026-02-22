@@ -125,6 +125,16 @@ const App = () => {
     setCartItems((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const clearCart = () => {
+    if (confirm("Are you sure you want to clear your entire solar cart?")) {
+      setCartItems([]);
+      if (session?.user?.id) {
+        localStorage.removeItem(`cart_${session.user.id}`);
+      }
+      notify("Cart cleared.", "info");
+    }
+  };
+
   const saveProduct = async (productData) => {
     setProductSaving(true);
     console.log("Starting product save process...", productData);
@@ -473,7 +483,7 @@ const App = () => {
   useEffect(() => {
     if (session && profile?.role === "supplier") {
       fetchSupplierData();
-    } else if (session && profile?.role === "user") {
+    } else if (session && (profile?.role === "user" || profile?.role === "installer")) {
       fetchUserData();
     }
   }, [session, profile, refreshTrigger]);
@@ -620,6 +630,7 @@ const App = () => {
         onClose={() => setIsCartOpen(false)}
         items={cartItems}
         onRemove={removeFromCart}
+        onClear={clearCart}
         onNotify={notify}
         onQuoteRequest={handleCartQuoteRequest}
       />
