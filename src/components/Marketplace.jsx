@@ -508,10 +508,10 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                                 fontSize: '0.75rem'
                                             }}>
                                                 <span style={{ fontWeight: 700, color: 'var(--trust-blue)' }}>PAY VIA:</span>
-                                                <div style={{ display: 'flex', gap: '8px', opacity: 0.7 }}>
-                                                    <div title="Airtel Money" style={{ width: '16px', height: '16px', background: '#ec1c24', borderRadius: '2px' }} />
-                                                    <div title="MTN MoMo" style={{ width: '16px', height: '16px', background: '#ffcc00', borderRadius: '2px' }} />
-                                                    <div title="Zamtel Kwacha" style={{ width: '16px', height: '16px', background: '#00a1e4', borderRadius: '2px' }} />
+                                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                                    <img src="/assets/payments/airtel_money.png" alt="Airtel Money" style={{ height: '18px' }} />
+                                                    <img src="/assets/payments/mtn_momo.png" alt="MTN MoMo" style={{ height: '18px' }} />
+                                                    <img src="/assets/payments/zamtel.png" alt="Zamtel" style={{ height: '18px' }} />
                                                 </div>
                                                 <span style={{ marginLeft: 'auto', fontWeight: 600, color: 'var(--trust-blue)' }}>Mobile Money</span>
                                             </div>

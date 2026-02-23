@@ -142,17 +142,10 @@ const Hero = ({ onDashboardClick }) => {
             <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               SECURE PAYMENTS VIA
             </span>
-            <div style={{ display: 'flex', gap: '24px', opacity: 0.8, filter: 'grayscale(1) brightness(2)' }}>
-              {/* Mocking logo placeholders with simple text-icons for reliability */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 900, color: 'white' }}>
-                <div style={{ width: '24px', height: '24px', background: '#ec1c24', borderRadius: '4px' }} /> airtel
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 900, color: 'white' }}>
-                <div style={{ width: '24px', height: '24px', background: '#ffcc00', borderRadius: '4px' }} /> MTN
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 900, color: 'white' }}>
-                <div style={{ width: '24px', height: '24px', background: '#00a1e4', borderRadius: '4px' }} /> zamtel
-              </div>
+            <div style={{ display: 'flex', gap: '32px', opacity: 0.9, alignItems: 'center' }}>
+              <img src="/assets/payments/airtel_money.png" alt="Airtel Money" style={{ height: '40px', objectFit: 'contain' }} />
+              <img src="/assets/payments/mtn_momo.png" alt="MTN MoMo" style={{ height: '40px', objectFit: 'contain' }} />
+              <img src="/assets/payments/zamtel.png" alt="Zamtel" style={{ height: '40px', objectFit: 'contain' }} />
             </div>
           </div>
         </div>
