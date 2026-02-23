@@ -71,7 +71,7 @@ const LoadSheddingPulse = () => {
           </div>
         </div>
         <a 
-          href="https://www.zesco.co.zm/customerCare/loadShedding" 
+          href="https://www.zesco.co.zm/customer-service-portal/load-management" 
           target="_blank" 
           rel="noopener noreferrer"
           className="btn btn-primary"
