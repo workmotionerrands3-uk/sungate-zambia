@@ -24,9 +24,10 @@ const LoadSheddingPulse = () => {
         alignItems: 'center',
         gap: '24px',
         border: '1px solid rgba(25, 135, 84, 0.3)',
+        justifyContent: 'center'
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 300px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 auto', minWidth: '280px' }} className="mobile-center">
         <div style={{ 
           width: '64px', 
           height: '64px', 
@@ -35,12 +36,13 @@ const LoadSheddingPulse = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          flexShrink: 0,
           animation: 'pulse-soft 2s infinite'
         }}>
           <AlertTriangle color={status.isEmergency ? 'var(--error)' : 'var(--zambia-green)'} size={32} />
         </div>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+        <div className="mobile-center">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }} className="mobile-center">
             <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--error)' }}>
               LIVE PULSE
             </span>
@@ -58,9 +60,10 @@ const LoadSheddingPulse = () => {
       <div style={{ 
         display: 'flex', 
         gap: '20px', 
-        flex: '1 1 250px',
-        justifyContent: 'flex-end',
-        alignItems: 'center'
+        flex: '1 1 auto',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minWidth: '250px'
       }} className="mobile-stack">
         <div style={{ textAlign: 'right', minWidth: '150px' }} className="mobile-center">
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)' }}>
@@ -83,12 +86,12 @@ const LoadSheddingPulse = () => {
             <Zap size={10} /> DIAL *360# (FASTEST)
           </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }} className="mobile-full">
           <a 
             href="https://www.zesco.co.zm/load-management" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="btn btn-primary"
+            className="btn btn-primary mobile-full"
             style={{ 
               padding: '12px 20px', 
               fontSize: '0.85rem',
