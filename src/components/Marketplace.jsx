@@ -508,10 +508,25 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                                 fontSize: '0.75rem'
                                             }}>
                                                 <span style={{ fontWeight: 700, color: 'var(--trust-blue)' }}>PAY VIA:</span>
-                                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                                    <img src="/assets/payments/airtel_money.png" alt="Airtel Money" style={{ height: '18px' }} />
-                                                    <img src="/assets/payments/mtn_momo.png" alt="MTN MoMo" style={{ height: '18px' }} />
-                                                    <img src="/assets/payments/zamtel.png" alt="Zamtel" style={{ height: '18px' }} />
+                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                    {[
+                                                        { src: '/assets/payments/airtel_money.png', alt: 'Airtel' },
+                                                        { src: '/assets/payments/mtn_momo.png', alt: 'MTN' },
+                                                        { src: '/assets/payments/zamtel.png', alt: 'Zamtel' }
+                                                    ].map((logo, idx) => (
+                                                        <div key={idx} style={{ 
+                                                            background: 'white', 
+                                                            padding: '4px 6px', 
+                                                            borderRadius: '6px', 
+                                                            display: 'flex', 
+                                                            alignItems: 'center',
+                                                            height: '24px',
+                                                            width: '36px',
+                                                            border: '1px solid #eee'
+                                                        }}>
+                                                            <img src={logo.src} alt={logo.alt} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                                                        </div>
+                                                    ))}
                                                 </div>
                                                 <span style={{ marginLeft: 'auto', fontWeight: 600, color: 'var(--trust-blue)' }}>Mobile Money</span>
                                             </div>

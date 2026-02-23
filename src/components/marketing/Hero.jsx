@@ -142,10 +142,29 @@ const Hero = ({ onDashboardClick }) => {
             <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               SECURE PAYMENTS VIA
             </span>
-            <div style={{ display: 'flex', gap: '32px', opacity: 0.9, alignItems: 'center' }}>
-              <img src="/assets/payments/airtel_money.png" alt="Airtel Money" style={{ height: '40px', objectFit: 'contain' }} />
-              <img src="/assets/payments/mtn_momo.png" alt="MTN MoMo" style={{ height: '40px', objectFit: 'contain' }} />
-              <img src="/assets/payments/zamtel.png" alt="Zamtel" style={{ height: '40px', objectFit: 'contain' }} />
+            <div style={{ display: 'flex', gap: '20px', opacity: 0.9, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+              {[
+                { src: '/assets/payments/airtel_money.png', alt: 'Airtel Money' },
+                { src: '/assets/payments/mtn_momo.png', alt: 'MTN MoMo' },
+                { src: '/assets/payments/zamtel.png', alt: 'Zamtel' }
+              ].map((logo, idx) => (
+                <div 
+                  key={idx} 
+                  style={{ 
+                    background: 'white', 
+                    padding: '8px 16px', 
+                    borderRadius: '12px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    height: '54px',
+                    width: '100px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  <img src={logo.src} alt={logo.alt} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                </div>
+              ))}
             </div>
           </div>
         </div>
