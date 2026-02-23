@@ -57,34 +57,53 @@ const LoadSheddingPulse = () => {
 
       <div style={{ 
         display: 'flex', 
-        gap: '12px', 
-        flex: '1 1 200px',
+        gap: '20px', 
+        flex: '1 1 250px',
         justifyContent: 'flex-end',
         alignItems: 'center'
       }} className="mobile-stack">
-        <div style={{ textAlign: 'right' }} className="mobile-center">
+        <div style={{ textAlign: 'right', minWidth: '150px' }} className="mobile-center">
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)' }}>
             Stage {status.stage}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#999', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }} className="mobile-center">
+          <div style={{ fontSize: '0.75rem', color: '#999', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginBottom: '8px' }} className="mobile-center">
             <Clock size={12} /> {status.lastUpdated}
           </div>
+          <div style={{ 
+            background: 'rgba(25, 135, 84, 0.1)', 
+            padding: '4px 8px', 
+            borderRadius: '6px', 
+            fontSize: '0.7rem', 
+            fontWeight: 700,
+            color: 'var(--zambia-green)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px'
+          }}>
+            <Zap size={10} /> DIAL *360# (FASTEST)
+          </div>
         </div>
-        <a 
-          href="https://www.zesco.co.zm/customer-service-portal/load-management" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="btn btn-primary"
-          style={{ 
-            padding: '12px 20px', 
-            fontSize: '0.85rem',
-            background: 'var(--trust-blue)',
-            color: 'white'
-          }}
-        >
-          View Full Schedule
-          <ExternalLink size={14} style={{ marginLeft: '8px' }} />
-        </a>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <a 
+            href="https://www.zesco.co.zm/load-management" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="btn btn-primary"
+            style={{ 
+              padding: '12px 20px', 
+              fontSize: '0.85rem',
+              background: 'var(--trust-blue)',
+              color: 'white',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            Check Web Portal
+            <ExternalLink size={14} style={{ marginLeft: '8px' }} />
+          </a>
+          <span style={{ fontSize: '0.65rem', color: '#999', textAlign: 'center' }}>
+            Portal often down; use USSD
+          </span>
+        </div>
       </div>
     </div>
   );
