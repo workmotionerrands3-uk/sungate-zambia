@@ -496,40 +496,7 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                                 </div>
                                             </div>
 
-                                            {/* Local Payment Indicator */}
-                                            <div style={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                gap: '8px', 
-                                                marginBottom: '16px',
-                                                padding: '8px 12px',
-                                                background: 'var(--sky-blue)',
-                                                borderRadius: '8px',
-                                                fontSize: '0.75rem'
-                                            }}>
-                                                <span style={{ fontWeight: 700, color: 'var(--trust-blue)' }}>PAY VIA:</span>
-                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                                    {[
-                                                        { src: '/assets/payments/airtel_money.png', alt: 'Airtel' },
-                                                        { src: '/assets/payments/mtn_momo.png', alt: 'MTN' },
-                                                        { src: '/assets/payments/zamtel.png', alt: 'Zamtel' }
-                                                    ].map((logo, idx) => (
-                                                        <div key={idx} style={{ 
-                                                            background: 'white', 
-                                                            padding: '4px 6px', 
-                                                            borderRadius: '6px', 
-                                                            display: 'flex', 
-                                                            alignItems: 'center',
-                                                            height: '24px',
-                                                            width: '36px',
-                                                            border: '1px solid #eee'
-                                                        }}>
-                                                            <img src={logo.src} alt={logo.alt} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <span style={{ marginLeft: 'auto', fontWeight: 600, color: 'var(--trust-blue)' }}>Mobile Money</span>
-                                            </div>
+
 
                                             <div style={{ display: 'flex', gap: '8px' }} className="mobile-stack">
                                                 <button

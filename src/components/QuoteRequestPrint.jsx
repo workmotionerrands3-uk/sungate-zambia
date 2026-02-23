@@ -164,7 +164,7 @@ const QuoteRequestPrint = () => {
 
             {/* Footer */}
             <div style={{ marginTop: '60px', borderTop: '1px solid #eee', paddingTop: '20px', fontSize: '12px', color: '#888', textAlign: 'center' }}>
-                <p><strong>SunGate Zambia</strong> • admin@sungate.co.zm • +260 97 000 0000</p>
+                <p><strong>SunGate Zambia</strong> • sungatezambia@gmail.com • +260 97 000 0000</p>
                 <p>Digital Marketplace for Renewable Energy Solutions</p>
             </div>
 

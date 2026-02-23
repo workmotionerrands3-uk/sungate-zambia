@@ -64,7 +64,7 @@ const MarketingFooter = ({ onDashboardClick }) => {
               </li>
               <li style={{ display: 'flex', gap: '12px', color: '#aaa' }}>
                 <div style={{ color: 'var(--sun-orange)' }}><Mail size={18} /></div>
-                <span>support@sungate.co.zm</span>
+                <span>sungatezambia@gmail.com</span>
               </li>
             </ul>
           </div>

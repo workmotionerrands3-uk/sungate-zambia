@@ -208,7 +208,7 @@ const StandardFooter = ({ openAuthWithRole }) => (
             </li>
             <li style={{ display: "flex", gap: "12px", color: "#aaa" }}>
               <MessageCircle size={20} color="var(--sun-orange)" />
-              <span>support@sungate.co.zm</span>
+              <span>sungatezambia@gmail.com</span>
             </li>
           </ul>
         </div>

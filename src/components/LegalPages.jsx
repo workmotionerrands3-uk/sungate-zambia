@@ -62,7 +62,7 @@ export const PrivacyPolicyPage = () => (
 
         <section style={{ marginBottom: '40px' }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '16px' }}>Contact Information</h2>
-            <p>For privacy concerns, please contact our Data Protection Officer at privacy@sungate.co.zm or call 0974300472.</p>
+            <p>For privacy concerns, please contact our Data Protection Officer at sungatezambia@gmail.com or call 0974300472.</p>
         </section>
     </div>
 )
