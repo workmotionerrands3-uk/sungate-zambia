@@ -2,6 +2,85 @@ import React, { useState, useEffect, useRef } from 'react'
 import { ShieldCheck, Filter, ShoppingCart, Info, CheckCircle, Heart, Search, LayoutGrid, Box, Battery, Zap, Droplets, Sun, Waves, ArrowUpDown, SlidersHorizontal, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
+const ProductImageGallery = ({ images, primaryImage, name, onToggleSave, isSaved, productId }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const galleryImages = images && images.length > 0 ? images : [primaryImage];
+
+    const nextImage = (e) => {
+        e.stopPropagation();
+        setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
+    };
+
+    const prevImage = (e) => {
+        e.stopPropagation();
+        setCurrentIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+    };
+
+    return (
+        <div className="product-image-container" style={{ width: '100%', aspectRatio: '1/1', background: '#f5f5f5', overflow: 'hidden', position: 'relative' }}>
+            <img
+                src={galleryImages[currentIndex]}
+                alt={`${name} - Image ${currentIndex + 1}`}
+                className="product-image"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'opacity 0.3s ease' }}
+            />
+            
+            {galleryImages.length > 1 && (
+                <>
+                    <button
+                        onClick={prevImage}
+                        style={{
+                            position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)',
+                            background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%',
+                            width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            cursor: 'pointer', zIndex: 11, boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}
+                    >
+                        <SlidersHorizontal size={14} style={{ transform: 'rotate(90deg)' }} />
+                    </button>
+                    <button
+                        onClick={nextImage}
+                        style={{
+                            position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
+                            background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%',
+                            width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            cursor: 'pointer', zIndex: 11, boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}
+                    >
+                        <SlidersHorizontal size={14} style={{ transform: 'rotate(-90deg)' }} />
+                    </button>
+                    
+                    <div style={{
+                        position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)',
+                        display: 'flex', gap: '4px', zIndex: 12
+                    }}>
+                        {galleryImages.map((_, i) => (
+                            <div key={i} style={{
+                                width: '6px', height: '6px', borderRadius: '50%',
+                                background: currentIndex === i ? 'var(--trust-blue)' : 'rgba(255,255,255,0.5)',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.1)', transition: 'all 0.2s'
+                            }} />
+                        ))}
+                    </div>
+                </>
+            )}
+
+            <button
+                onClick={(e) => { e.stopPropagation(); onToggleSave(productId); }}
+                style={{
+                    position: 'absolute', top: '12px', right: '12px',
+                    background: 'white', border: 'none', borderRadius: '50%',
+                    width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', color: isSaved ? '#ff4d4d' : '#888',
+                    zIndex: 15
+                }}
+            >
+                <Heart size={20} fill={isSaved ? '#ff4d4d' : 'none'} />
+            </button>
+        </div>
+    );
+};
+
 const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, savedProductIds = [], onToggleSave }) => {
     const [filter, setFilter] = useState('All')
     const [searchQuery, setSearchQuery] = useState('')
@@ -451,27 +530,14 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                         </div>
                                     )}
 
-                                    <div className="product-image-container" style={{ width: '100%', aspectRatio: '1/1', background: '#f5f5f5', overflow: 'hidden', position: 'relative' }}>
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            className="product-image"
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
-                                            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                                            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                                        />
-                                        <button
-                                            onClick={() => onToggleSave(product.id)}
-                                            style={{
-                                                position: 'absolute', top: '12px', right: '12px',
-                                                background: 'white', border: 'none', borderRadius: '50%',
-                                                width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', color: savedProductIds.includes(product.id) ? '#ff4d4d' : '#888'
-                                            }}
-                                        >
-                                            <Heart size={20} fill={savedProductIds.includes(product.id) ? '#ff4d4d' : 'none'} />
-                                        </button>
-                                    </div>
+                                    <ProductImageGallery 
+                                        images={product.images} 
+                                        primaryImage={product.image} 
+                                        name={product.name}
+                                        onToggleSave={onToggleSave}
+                                        isSaved={savedProductIds.includes(product.id)}
+                                        productId={product.id}
+                                    />
 
                                     <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                                         <div style={{ fontSize: '0.8rem', color: 'var(--sun-orange)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>{product.category}</div>

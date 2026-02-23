@@ -6,8 +6,8 @@ const AddProductModal = ({ isOpen, onClose, onSave, loading }) => {
         name: '',
         category: 'Solar Panels',
         price: '',
-        imageFile: null,
-        previewUrl: null,
+        imageFiles: [], // Array of File objects
+        previewUrls: [], // Array of preview URLs
         specs: [{ key: '', value: '' }],
         duty_free: true
     })
@@ -15,14 +15,38 @@ const AddProductModal = ({ isOpen, onClose, onSave, loading }) => {
     const categories = ['Kits', 'Batteries', 'Inverters', 'Pumps', 'Solar Panels', 'Water Heaters']
 
     const handleFileChange = (e) => {
-        const file = e.target.files[0]
-        if (file) {
+        const files = Array.from(e.target.files)
+        if (files.length > 0) {
+            const currentFiles = [...formData.imageFiles]
+            const currentPreviews = [...formData.previewUrls]
+
+            // Only allow up to 4 images
+            const remainingSlots = 4 - currentFiles.length
+            const filesToAdd = files.slice(0, remainingSlots)
+
+            const newFiles = [...currentFiles, ...filesToAdd]
+            const newPreviews = [...currentPreviews, ...filesToAdd.map(file => URL.createObjectURL(file))]
+
             setFormData({
                 ...formData,
-                imageFile: file,
-                previewUrl: URL.createObjectURL(file)
+                imageFiles: newFiles,
+                previewUrls: newPreviews
             })
         }
+    }
+
+    const removeImage = (index) => {
+        const newFiles = formData.imageFiles.filter((_, i) => i !== index)
+        const newPreviews = formData.previewUrls.filter((_, i) => i !== index)
+        
+        // Revoke the URL to avoid memory leaks
+        URL.revokeObjectURL(formData.previewUrls[index])
+
+        setFormData({
+            ...formData,
+            imageFiles: newFiles,
+            previewUrls: newPreviews
+        })
     }
 
     const handleSpecChange = (index, field, value) => {
@@ -41,8 +65,8 @@ const AddProductModal = ({ isOpen, onClose, onSave, loading }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (!formData.imageFile) {
-            alert("Please upload a product image.")
+        if (formData.imageFiles.length === 0) {
+            alert("Please upload at least one product image.")
             return
         }
 
@@ -125,45 +149,54 @@ const AddProductModal = ({ isOpen, onClose, onSave, loading }) => {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#666', marginBottom: '8px' }}>Product Image</label>
-                            <div style={{
-                                border: '2px dashed #ddd', borderRadius: '12px', padding: '20px',
-                                textAlign: 'center', cursor: 'pointer', position: 'relative',
-                                background: formData.previewUrl ? '#f8f9fa' : 'white'
-                            }}>
-                                {formData.previewUrl ? (
-                                    <div style={{ position: 'relative', width: '100%', height: '160px' }}>
+                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#666', marginBottom: '8px' }}>Product Images (Up to 4)</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
+                                {formData.previewUrls.map((url, index) => (
+                                    <div key={index} style={{
+                                        position: 'relative', width: '100%', aspectRatio: '1/1',
+                                        border: '1px solid #eee', borderRadius: '12px', overflow: 'hidden',
+                                        background: '#f8f9fa'
+                                    }}>
                                         <img
-                                            src={formData.previewUrl}
-                                            alt="Preview"
-                                            style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }}
+                                            src={url}
+                                            alt={`Preview ${index + 1}`}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
                                         <button
                                             type="button"
-                                            onClick={() => setFormData({ ...formData, imageFile: null, previewUrl: null })}
+                                            onClick={() => removeImage(index)}
                                             style={{
-                                                position: 'absolute', top: '-10px', right: '-10px',
-                                                background: '#ff4d4d', color: 'white', border: 'none',
-                                                borderRadius: '50%', width: '24px', height: '24px',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                                                position: 'absolute', top: '4px', right: '4px',
+                                                background: 'rgba(255, 77, 77, 0.9)', color: 'white', border: 'none',
+                                                borderRadius: '50%', width: '20px', height: '20px',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                                             }}
                                         >
-                                            <X size={14} />
+                                            <X size={12} />
                                         </button>
                                     </div>
-                                ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                                        <ImageIcon size={32} color="#aaa" />
-                                        <div style={{ fontSize: '0.9rem', color: '#666' }}>Click to upload product photo</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#999' }}>PNG, JPG or WebP (Max 5MB)</div>
+                                ))}
+
+                                {formData.previewUrls.length < 4 && (
+                                    <div style={{
+                                        border: '2px dashed #ddd', borderRadius: '12px', aspectRatio: '1/1',
+                                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                        cursor: 'pointer', position: 'relative', background: 'white', gap: '4px'
+                                    }}>
+                                        <ImageIcon size={24} color="#aaa" />
+                                        <div style={{ fontSize: '0.7rem', color: '#666', fontWeight: 600 }}>Add Image</div>
+                                        <input
+                                            type="file" accept="image/*" multiple
+                                            onChange={handleFileChange}
+                                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                                        />
                                     </div>
                                 )}
-                                <input
-                                    type="file" accept="image/*"
-                                    onChange={handleFileChange}
-                                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
-                                />
                             </div>
+                            <p style={{ fontSize: '0.65rem', color: '#999', marginTop: '8px' }}>
+                                First image will be the primary display. PNG, JPG or WebP (Max 5MB each).
+                            </p>
                         </div>
 
                         <div>

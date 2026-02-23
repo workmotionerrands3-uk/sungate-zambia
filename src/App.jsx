@@ -155,45 +155,43 @@ const App = () => {
 
   const saveProduct = async (productData) => {
     setProductSaving(true);
-    console.log("Starting product save process...", productData);
+    console.log("Starting multi-image product save process...", productData);
     try {
-      let imageUrl = "";
+      let imageUrls = [];
 
-      // 1. Upload Image to Supabase Storage
-      if (productData.imageFile) {
-        const file = productData.imageFile;
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-        const filePath = `${session.user.id}/${fileName}`;
+      // 1. Upload All Images to Supabase Storage
+      if (productData.imageFiles && productData.imageFiles.length > 0) {
+        const uploadPromises = productData.imageFiles.map(async (file) => {
+          const fileExt = file.name.split(".").pop();
+          const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+          const filePath = `${session.user.id}/${fileName}`;
 
-        console.log("Uploading file to bucket 'Product'...", filePath);
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from("Product")
-          .upload(filePath, file);
+          console.log("Uploading file to bucket 'Product'...", filePath);
+          const { error: uploadError } = await supabase.storage
+            .from("Product")
+            .upload(filePath, file);
 
-        if (uploadError) {
-          console.error("Upload error details:", uploadError);
-          throw new Error(
-            `Upload failed: ${uploadError.message}. Make sure the 'Product' bucket exists and has public 'insert' policies.`,
-          );
-        }
+          if (uploadError) {
+            console.error("Upload error details:", uploadError);
+            throw new Error(`Upload failed for ${file.name}: ${uploadError.message}`);
+          }
 
-        console.log("Upload successful, fetching public URL...");
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("Product").getPublicUrl(filePath);
+          const { data: { publicUrl } } = supabase.storage.from("Product").getPublicUrl(filePath);
+          return publicUrl;
+        });
 
-        imageUrl = publicUrl;
-        console.log("Public URL generated:", imageUrl);
+        imageUrls = await Promise.all(uploadPromises);
+        console.log("All uploads successful, public URLs:", imageUrls);
       }
 
       // 2. Save Product to Database
       console.log("Inserting product into database...");
-      const { imageFile, previewUrl, ...dbData } = productData;
+      const { imageFiles, previewUrls, ...dbData } = productData;
       const { error: dbError } = await supabase.from("products").insert([
         {
           ...dbData,
-          image: imageUrl,
+          image: imageUrls[0] || "", // Primary image for backward compatibility
+          images: imageUrls, // Full array for the new gallery system
           supplier_id: session.user.id,
           slug:
             productData.name
@@ -216,7 +214,7 @@ const App = () => {
         throw new Error(`Database save failed: ${dbError.message}`);
       }
 
-      notify("Product listed successfully with image!", "success");
+      notify("Product listed successfully with multiple images!", "success");
       setShowAddProduct(false);
       setRefreshTrigger((prev) => prev + 1);
       fetchSupplierData(); // Refresh stats
