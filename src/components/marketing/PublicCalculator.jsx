@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MapPin, Zap, Calculator, ArrowRight, RotateCcw, AlertCircle } from 'lucide-react';
 
-const PublicCalculator = ({ onAuthClick }) => {
+const PublicCalculator = ({ onAuthClick, zescoRate = 2.50 }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     location: '',
@@ -29,18 +29,58 @@ const PublicCalculator = ({ onAuthClick }) => {
   };
 
   const calculateBasic = () => {
-    const baseSize = formData.bill / 600;
-    const loadMultiplier = formData.appliances.length * 1.2;
-    const systemSize = Math.max(2, Math.ceil(baseSize + loadMultiplier));
+    // 2026 ZESCO Residential Tariffs (MYTF Framework)
+    const getKWhFromBill = (bill) => {
+        if (bill <= 54) return bill / 0.54;
+        if (bill <= 310) return 100 + (bill - 54) / 1.28;
+        if (bill <= 724) return 300 + (bill - 310) / 2.07;
+        return 500 + (bill - 724) / 3.23;
+    };
 
-    const costMin = systemSize * 8500;
-    const costMax = systemSize * 16000;
-    const savings = formData.bill * 0.85;
+    const monthlyKWh = getKWhFromBill(formData.bill);
+    const dailyKWh = monthlyKWh / 30;
+    const peakSunHours = 5.5;
+
+    // Simplified sizing for public estimator
+    let suggestedSize = (dailyKWh / peakSunHours) * 1.1;
+    const loadMultiplier = formData.appliances.length * 0.8;
+    const systemSize = Math.max(2, Math.min(15, Math.ceil(suggestedSize + loadMultiplier)));
+
+    // Market Costs
+    const costMin = systemSize * 15000;
+    const costMax = systemSize * 25000;
+
+    // Savings Calculation (85% coverage)
+    const offsetKWh = monthlyKWh * 0.85;
+    let savingsTotal = 0;
+    let remainingOffset = offsetKWh;
+    
+    if (monthlyKWh > 500) {
+        const tier4Usage = monthlyKWh - 500;
+        const offsetInTier4 = Math.min(remainingOffset, tier4Usage);
+        savingsTotal += offsetInTier4 * 3.23;
+        remainingOffset -= offsetInTier4;
+    }
+    if (remainingOffset > 0 && monthlyKWh > 300) {
+        const tier3Usage = Math.min(200, monthlyKWh - 300);
+        const offsetInTier3 = Math.min(remainingOffset, tier3Usage);
+        savingsTotal += offsetInTier3 * 2.07;
+        remainingOffset -= offsetInTier3;
+    }
+    if (remainingOffset > 0 && monthlyKWh > 100) {
+        const tier2Usage = Math.min(200, monthlyKWh - 100);
+        const offsetInTier2 = Math.min(remainingOffset, tier2Usage);
+        savingsTotal += offsetInTier2 * 1.28;
+        remainingOffset -= offsetInTier2;
+    }
+    if (remainingOffset > 0) {
+        savingsTotal += remainingOffset * 0.54;
+    }
 
     setResults({
       size: `${systemSize}kW`,
       cost: `K${costMin.toLocaleString()} - K${costMax.toLocaleString()}`,
-      savings: `K${savings.toLocaleString()}`
+      savings: `K${Math.round(savingsTotal).toLocaleString()}`
     });
     setStep(4);
   };

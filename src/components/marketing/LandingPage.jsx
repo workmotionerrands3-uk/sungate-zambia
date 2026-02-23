@@ -7,7 +7,7 @@ import FeaturedInstallers from './FeaturedInstallers';
 import TrustBadges from './TrustBadges';
 import KnowledgeHubPreview from './KnowledgeHubPreview';
 
-const LandingPage = ({ onAuthClick }) => {
+const LandingPage = ({ onAuthClick, zescoRate }) => {
   const handleDashboardClick = () => onAuthClick('user');
 
   return (
@@ -17,7 +17,7 @@ const LandingPage = ({ onAuthClick }) => {
       <Benefits onAuthClick={onAuthClick} />
       <HowItWorks onCalcClick={() => document.getElementById('public-calculator').scrollIntoView({ behavior: 'smooth' })} />
       <section id="public-calculator-section">
-        <PublicCalculator onAuthClick={onAuthClick} />
+        <PublicCalculator onAuthClick={onAuthClick} zescoRate={zescoRate} />
       </section>
       <FeaturedInstallers onAuthClick={onAuthClick} />
       <KnowledgeHubPreview />

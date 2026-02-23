@@ -29,28 +29,91 @@ const SolarCalculator = ({ onSaveResult, zescoRate = 1.35 }) => {
     }
 
     const calculateSystem = () => {
-        // Basic logic for demonstration
-        const baseSize = formData.bill / 500 // Rough estimate
-        const loadMultiplier = formData.appliances.length * 1.5
-        const systemSize = Math.max(3, Math.ceil(baseSize + loadMultiplier))
+        // 2026 ZESCO Residential Tariffs (MYTF Framework)
+        // R1: 0-100kWh @ K0.54
+        // R2: 101-300kWh @ K1.28
+        // R3: 301-500kWh @ K2.07
+        // R4: >500kWh @ K3.23
 
-        const costMin = systemSize * 8000
-        const costMax = systemSize * 15000
-        const savings = formData.bill * 0.9 // Assuming 90% offset
+        // Function to find kWh from monthly bill (inverse of tiered pricing)
+        const getKWhFromBill = (bill) => {
+            if (bill <= 54) return bill / 0.54;
+            if (bill <= 310) return 100 + (bill - 54) / 1.28;
+            if (bill <= 724) return 300 + (bill - 310) / 2.07;
+            return 500 + (bill - 724) / 3.23;
+        };
 
-        // Net Metering Logic: Use Dynamic Rate
-        // Assuming surplus generation of 10kWh/day for 22 equivalent days/month
-        const surplusEstimated = systemSize * 2.5 // Rough surplus generated per day
-        const netMeteringIncome = surplusEstimated * 30 * zescoRate
+        const monthlyKWh = getKWhFromBill(formData.bill);
+        const dailyKWh = monthlyKWh / 30;
+
+        // Peak sun hours in Zambia: ~5.5 hours average
+        const peakSunHours = 5.5;
+        
+        // Sizing: Target 110% of daily consumption to account for charging efficiency
+        // Min system size 3kW for stability, Max 15kW for residential
+        let suggestedSize = (dailyKWh / peakSunHours) * 1.1;
+        
+        // Factor in appliance multipliers
+        const loadMultiplier = formData.appliances.length * 0.8; 
+        suggestedSize = Math.max(3, Math.ceil(suggestedSize + loadMultiplier));
+        
+        // Residential limit check
+        const systemSize = Math.min(15, suggestedSize);
+
+        // Updated Market Costs (K15,000 to K25,000 per kW installed)
+        // Higher end includes better battery/inverter combinations
+        const costMin = systemSize * 15000;
+        const costMax = systemSize * 25000;
+
+        // Monthly savings: Assuming solar covers 85% of load
+        // We calculate savings based on the highest tiers first (most offset value)
+        const savingsPercentage = 0.85;
+        const offsetKWh = monthlyKWh * savingsPercentage;
+        
+        let savingsTotal = 0;
+        let remainingOffset = offsetKWh;
+        
+        // Savings logic: Start from the highest tier consumed
+        if (monthlyKWh > 500) {
+            const tier4Usage = monthlyKWh - 500;
+            const offsetInTier4 = Math.min(remainingOffset, tier4Usage);
+            savingsTotal += offsetInTier4 * 3.23;
+            remainingOffset -= offsetInTier4;
+        }
+        if (remainingOffset > 0 && monthlyKWh > 300) {
+            const tier3Usage = Math.min(200, monthlyKWh - 300);
+            const offsetInTier3 = Math.min(remainingOffset, tier3Usage);
+            savingsTotal += offsetInTier3 * 2.07;
+            remainingOffset -= offsetInTier3;
+        }
+        if (remainingOffset > 0 && monthlyKWh > 100) {
+            const tier2Usage = Math.min(200, monthlyKWh - 100);
+            const offsetInTier2 = Math.min(remainingOffset, tier2Usage);
+            savingsTotal += offsetInTier2 * 1.28;
+            remainingOffset -= offsetInTier2;
+        }
+        if (remainingOffset > 0) {
+            savingsTotal += remainingOffset * 0.54;
+        }
+
+        // Net Metering/Surplus: Rough surplus estimation (25% of generation)
+        const totalGenerationMonthly = systemSize * peakSunHours * 30;
+        const surplusEstimated = Math.max(0, totalGenerationMonthly - offsetKWh);
+        const netMeteringIncome = surplusEstimated * zescoRate; // Using the provided export rate
+
+        // Dynamic Payback Period
+        const averageCost = (costMin + costMax) / 2;
+        const yearlySavings = (savingsTotal + netMeteringIncome) * 12;
+        const paybackYears = averageCost / yearlySavings;
 
         setResults({
             size: `${systemSize}kW`,
             cost: `K${costMin.toLocaleString()} - K${costMax.toLocaleString()}`,
-            savings: `K${savings.toLocaleString()}`,
+            savings: `K${Math.round(savingsTotal).toLocaleString()}`,
             income: `K${Math.round(netMeteringIncome).toLocaleString()}`,
-            payback: '3-4 years'
-        })
-        setStep(5)
+            payback: `${paybackYears.toFixed(1)} years`
+        });
+        setStep(5);
     }
 
     const reset = () => {

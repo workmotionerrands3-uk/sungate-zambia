@@ -74,7 +74,7 @@ const App = () => {
   const [userSavedProducts, setUserSavedProducts] = useState([]);
   const [userCalcHistory, setUserCalcHistory] = useState([]);
   const [userInquiries, setUserInquiries] = useState([]);
-  const [siteSettings, setSiteSettings] = useState({ zesco_rate: 1.35, support_phone: '0974300472' });
+  const [siteSettings, setSiteSettings] = useState({ zesco_rate: 2.50, support_phone: '0974300472' });
   const [loading, setLoading] = useState(true);
   const [passwordRecoveryMode, setPasswordRecoveryMode] = useState(false);
   const [showPdfModal, setShowPdfModal] = useState(false);
@@ -738,7 +738,7 @@ const App = () => {
           {/* Root Route: Landing Page or Role-Based Dashboard */}
           <Route path="/" element={
             !session ? (
-              <LandingPage onAuthClick={openAuthWithRole} session={session} />
+              <LandingPage onAuthClick={openAuthWithRole} session={session} zescoRate={siteSettings.zesco_rate} />
             ) : (
               <>
                 {profile?.role === "admin" ? (
