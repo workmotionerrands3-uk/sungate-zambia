@@ -99,7 +99,7 @@ const PublicCalculator = ({ onAuthClick, zescoRate = 2.50 }) => {
           <p style={{ color: 'var(--text-muted)' }}>Quick estimate for your solar needs. No login required.</p>
         </div>
 
-        <div style={{ background: 'white', padding: '40px', borderRadius: '24px', boxShadow: 'var(--shadow-md)', border: '1px solid #eee' }}>
+        <div className="glass" style={{ padding: '40px', borderRadius: '24px', boxShadow: 'var(--shadow-md)', border: '1px solid rgba(255,255,255,0.4)', position: 'relative', overflow: 'hidden' }}>
           {step === 1 && (
             <div>
               <h3 style={{ marginBottom: '24px' }}><MapPin size={24} color="var(--sun-orange)" style={{ verticalAlign: 'middle', marginRight: '10px' }} /> Step 1: Your Location</h3>

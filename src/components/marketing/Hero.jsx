@@ -31,48 +31,65 @@ const Hero = ({ onDashboardClick }) => {
       />
       
       <div className="container" style={{ position: 'relative', zIndex: 2, width: '100%' }}>
-        <div className="animate-slide-up" style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div 
+          className="animate-slide-up glass-dark" 
+          style={{ 
+            maxWidth: '850px', 
+            margin: '0 auto', 
+            padding: '60px 40px', 
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}
+        >
           <div
-            className="badge badge-verified"
+            className="badge"
             style={{
               marginBottom: '24px',
-              background: 'rgba(255,255,255,0.2)',
+              background: 'rgba(25, 135, 84, 0.2)',
               color: 'white',
-              border: '1px solid rgba(255,255,255,0.4)',
+              border: '1px solid rgba(25, 135, 84, 0.4)',
               display: 'inline-flex',
               alignItems: 'center',
+              backdropFilter: 'blur(4px)',
+              padding: '8px 20px',
+              fontSize: '0.85rem'
             }}
           >
             <ShieldCheck
-              size={16}
-              style={{ marginRight: '8px', color: 'var(--sun-gold)' }}
+              size={18}
+              style={{ marginRight: '8px', color: '#4ade80' }}
             />
-            Zambia's Trusted Solar Marketplace
+            Zambia's #1 Renewable Energy Marketplace
           </div>
           <h1
             style={{
-              fontSize: 'clamp(3rem, 6vw, 4.5rem)',
+              fontSize: 'clamp(2.5rem, 8vw, 4.5rem)',
               fontWeight: 800,
               marginBottom: '24px',
               lineHeight: 1.1,
-              textShadow: '0 4px 20px rgba(0,0,0,0.3)',
-              color: 'white'
+              color: 'white',
+              letterSpacing: '-0.02em'
             }}
           >
-            Zambia's Trusted <br />
-            <span style={{ color: 'var(--sun-orange)' }}>Solar Marketplace</span>
+            Powering Zambia <br />
+            With <span style={{ 
+              color: 'var(--sun-orange)',
+              background: 'linear-gradient(to right, #FFB300, #FF6F00)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>Sustainable Energy</span>
           </h1>
           <p
             style={{
-              fontSize: '1.25rem',
-              color: '#f0f0f0',
+              fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+              color: 'rgba(255,255,255,0.9)',
               marginBottom: '48px',
               maxWidth: '700px',
               margin: '0 auto 48px',
               lineHeight: 1.6,
             }}
           >
-            Compare certified installers, calculate your savings, and find quality solar products—all in one place.
+            Join 5,000+ Zambian homes and businesses comparing certified installers and finding quality solar products daily.
           </p>
           <div
             style={{
@@ -80,29 +97,63 @@ const Hero = ({ onDashboardClick }) => {
               flexWrap: 'wrap',
               justifyContent: 'center',
               gap: '16px',
+              marginBottom: '48px'
             }}
           >
             <button
               onClick={onDashboardClick}
               className="btn btn-primary"
-              style={{ padding: '16px 32px', fontSize: '1.1rem' }}
+              style={{ 
+                padding: '18px 36px', 
+                fontSize: '1.1rem',
+                boxShadow: '0 10px 20px rgba(255, 111, 0, 0.3)'
+              }}
             >
-              Access Your Solar Dashboard
+              Get My Solar Quote
               <ArrowRight size={20} style={{ marginLeft: '8px' }} />
             </button>
             <a
-              href="#how-it-works"
+              href="#calculator"
               className="btn"
               style={{
-                background: 'white',
-                color: 'var(--trust-blue)',
-                padding: '16px 32px',
+                background: 'rgba(255,255,255,0.1)',
+                color: 'white',
+                padding: '18px 36px',
                 fontSize: '1.1rem',
                 fontWeight: 700,
+                border: '1px solid rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(4px)'
               }}
             >
-              See How It Works
+              Calculate Savings
             </a>
+          </div>
+
+          {/* Payment Logos Section */}
+          <div style={{ 
+            marginTop: '20px', 
+            paddingTop: '20px', 
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '16px'
+          }}>
+            <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              SECURE PAYMENTS VIA
+            </span>
+            <div style={{ display: 'flex', gap: '24px', opacity: 0.8, filter: 'grayscale(1) brightness(2)' }}>
+              {/* Mocking logo placeholders with simple text-icons for reliability */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 900, color: 'white' }}>
+                <div style={{ width: '24px', height: '24px', background: '#ec1c24', borderRadius: '4px' }} /> airtel
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 900, color: 'white' }}>
+                <div style={{ width: '24px', height: '24px', background: '#ffcc00', borderRadius: '4px' }} /> MTN
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 900, color: 'white' }}>
+                <div style={{ width: '24px', height: '24px', background: '#00a1e4', borderRadius: '4px' }} /> zamtel
+              </div>
+            </div>
           </div>
         </div>
       </div>

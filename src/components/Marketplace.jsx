@@ -427,10 +427,11 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                     <button onClick={() => {setFilter('All'); setSearchQuery(''); setPriceRange('all')}} style={{ marginTop: '16px', color: 'var(--trust-blue)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>Clear all filters</button>
                                 </div>
                             ) : filteredProducts.map(product => (
-                                <div key={product.id} className="product-card" style={{
-                                    background: 'white', borderRadius: 'var(--radius-md)', overflow: 'hidden',
-                                    boxShadow: 'var(--shadow-sm)', border: '1px solid #eee', position: 'relative',
-                                    display: 'flex', flexDirection: 'column'
+                                <div key={product.id} className="product-card glass-card" style={{
+                                    background: 'white', borderRadius: 'var(--radius-lg)', overflow: 'hidden',
+                                    boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0', position: 'relative',
+                                    display: 'flex', flexDirection: 'column',
+                                    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                                 }}>
                                     {product.verified && (
                                         <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -490,9 +491,29 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                         <div style={{ marginTop: 'auto' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }} className="mobile-stack">
                                                 <div className="price" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--trust-blue)' }}>{product.price}</div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', color: 'var(--zambia-green)' }}>
-                                                    <CheckCircle size={14} /> In Stock
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', color: 'var(--zambia-green)', fontWeight: 600 }}>
+                                                    <CheckCircle size={14} /> In Stock (Zambia)
                                                 </div>
+                                            </div>
+
+                                            {/* Local Payment Indicator */}
+                                            <div style={{ 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                gap: '8px', 
+                                                marginBottom: '16px',
+                                                padding: '8px 12px',
+                                                background: 'var(--sky-blue)',
+                                                borderRadius: '8px',
+                                                fontSize: '0.75rem'
+                                            }}>
+                                                <span style={{ fontWeight: 700, color: 'var(--trust-blue)' }}>PAY VIA:</span>
+                                                <div style={{ display: 'flex', gap: '8px', opacity: 0.7 }}>
+                                                    <div title="Airtel Money" style={{ width: '16px', height: '16px', background: '#ec1c24', borderRadius: '2px' }} />
+                                                    <div title="MTN MoMo" style={{ width: '16px', height: '16px', background: '#ffcc00', borderRadius: '2px' }} />
+                                                    <div title="Zamtel Kwacha" style={{ width: '16px', height: '16px', background: '#00a1e4', borderRadius: '2px' }} />
+                                                </div>
+                                                <span style={{ marginLeft: 'auto', fontWeight: 600, color: 'var(--trust-blue)' }}>Mobile Money</span>
                                             </div>
 
                                             <div style={{ display: 'flex', gap: '8px' }} className="mobile-stack">
