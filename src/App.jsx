@@ -169,7 +169,11 @@ const App = () => {
           console.log("Uploading file to bucket 'Product'...", filePath);
           const { error: uploadError } = await supabase.storage
             .from("Product")
-            .upload(filePath, file);
+            .upload(filePath, file, {
+              upsert: true,
+              cacheControl: "3600",
+              contentType: file.type,
+            });
 
           if (uploadError) {
             console.error("Upload error details:", uploadError);
