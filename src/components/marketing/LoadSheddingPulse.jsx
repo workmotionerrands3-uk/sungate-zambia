@@ -88,7 +88,7 @@ const LoadSheddingPulse = () => {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }} className="mobile-full">
           <a 
-            href="https://www.zesco.co.zm/load-management" 
+            href="https://www.zesco.co.zm" 
             target="_blank" 
             rel="noopener noreferrer"
             className="btn btn-primary mobile-full"
@@ -104,7 +104,7 @@ const LoadSheddingPulse = () => {
             <ExternalLink size={14} style={{ marginLeft: '8px' }} />
           </a>
           <span style={{ fontSize: '0.65rem', color: '#999', textAlign: 'center' }}>
-            Portal often down; use USSD
+            Or dial *360# for instant schedule
           </span>
         </div>
       </div>
