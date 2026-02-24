@@ -1,16 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { X, Package, DollarSign, Image as ImageIcon, Tag, Save, Plus, Trash2 } from 'lucide-react'
 
+const defaultFormData = {
+    name: '',
+    category: 'Solar Panels',
+    price: '',
+    imageFiles: [],
+    previewUrls: [],
+    specs: [{ key: '', value: '' }],
+    duty_free: true
+}
+
 const AddProductModal = ({ isOpen, onClose, onSave, loading }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        category: 'Solar Panels',
-        price: '',
-        imageFiles: [], // Array of File objects
-        previewUrls: [], // Array of preview URLs
-        specs: [{ key: '', value: '' }],
-        duty_free: true
-    })
+    const [formData, setFormData] = useState({ ...defaultFormData })
+    const prevIsOpen = useRef(false)
+
+    // Reset form every time the modal is opened freshly
+    useEffect(() => {
+        if (isOpen && !prevIsOpen.current) {
+            // Revoke any stale object URLs before resetting
+            formData.previewUrls.forEach(url => URL.revokeObjectURL(url))
+            setFormData({ ...defaultFormData, specs: [{ key: '', value: '' }] })
+        }
+        prevIsOpen.current = isOpen
+    }, [isOpen])
 
     const categories = ['Kits', 'Batteries', 'Inverters', 'Pumps', 'Solar Panels', 'Water Heaters']
 
@@ -64,7 +77,9 @@ const AddProductModal = ({ isOpen, onClose, onSave, loading }) => {
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault()
+        // Guard: only call preventDefault if this is an actual form event
+        if (e && typeof e.preventDefault === 'function') e.preventDefault()
+
         if (formData.imageFiles.length === 0) {
             alert("Please upload at least one product image.")
             return
@@ -82,6 +97,13 @@ const AddProductModal = ({ isOpen, onClose, onSave, loading }) => {
             // Format price as "K X,XXX" if user just enters a number
             price: formData.price.startsWith('K') ? formData.price : `K${parseInt(formData.price).toLocaleString()}`
         })
+    }
+
+    const handleClose = () => {
+        // Revoke object URLs to avoid memory leaks
+        formData.previewUrls.forEach(url => URL.revokeObjectURL(url))
+        setFormData({ ...defaultFormData, specs: [{ key: '', value: '' }] })
+        onClose()
     }
 
     if (!isOpen) return null
@@ -106,7 +128,7 @@ const AddProductModal = ({ isOpen, onClose, onSave, loading }) => {
                         </div>
                         <h2 style={{ fontSize: '1.25rem', color: 'var(--trust-blue)' }}>List New Product</h2>
                     </div>
-                    <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
+                    <button type="button" onClick={handleClose} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
                         <X size={24} />
                     </button>
                 </div>
@@ -244,7 +266,7 @@ const AddProductModal = ({ isOpen, onClose, onSave, loading }) => {
                 </form>
 
                 <div style={{ padding: '24px', borderTop: '1px solid #eee', background: '#fcfcfc', display: 'flex', gap: '12px' }}>
-                    <button onClick={onClose} className="btn btn-secondary" style={{ flex: 1 }}>Cancel</button>
+                    <button type="button" onClick={handleClose} className="btn btn-secondary" style={{ flex: 1 }}>Cancel</button>
                     <button
                         onClick={handleSubmit}
                         disabled={loading}

@@ -214,10 +214,10 @@ const App = () => {
         throw new Error(`Database save failed: ${dbError.message}`);
       }
 
-      notify("Product listed successfully with multiple images!", "success");
+      notify("Product listed successfully!", "success");
       setShowAddProduct(false);
       setRefreshTrigger((prev) => prev + 1);
-      fetchSupplierData(); // Refresh stats
+      fetchSupplierData(true); // Refresh stats — forceRun bypasses stale profile check
     } catch (err) {
       console.error("Caught error in saveProduct:", err);
       notify(err.message || "An unknown error occurred", "error");
@@ -467,9 +467,9 @@ const App = () => {
     }
   };
 
-  const fetchSupplierData = async () => {
+  const fetchSupplierData = async (forceRun = false) => {
     // Include admins and installers in supplier data check if applicable
-    if (!session || (profile?.role !== "supplier" && profile?.role !== "admin")) return;
+    if (!session || (!forceRun && profile?.role !== "supplier" && profile?.role !== "admin")) return;
 
     try {
       // Fetch Products list
