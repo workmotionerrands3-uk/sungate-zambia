@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BookOpen, Calendar, ArrowRight, User, Tag, X, CheckCircle, Info, ShieldCheck } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='133' viewBox='0 0 200 133'%3E%3Crect width='200' height='133' fill='%23f0f4f8'/%3E%3Ccircle cx='100' cy='55' r='22' fill='%23FFB300'/%3E%3Cpath d='M100 25v6M100 78v6M70 55h6M118 55h6M78 35l4 4M116 69l4 4M78 75l4-4M116 41l4-4' stroke='%23FFB300' stroke-width='3' stroke-linecap='round'/%3E%3Ctext x='100' y='105' text-anchor='middle' font-size='10' fill='%23aaa' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
@@ -8,7 +9,6 @@ const KnowledgeHub = () => {
     const [articles, setArticles] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const [selectedArticle, setSelectedArticle] = useState(null)
 
     useEffect(() => {
         fetchArticles()
@@ -64,14 +64,17 @@ const KnowledgeHub = () => {
                         <div style={{ gridColumn: 'span 3', textAlign: 'center', padding: '100px 0' }}>
                             <p>No articles found.</p>
                         </div>
-                    ) : articles.map(post => (
-                        <article key={post.id} style={{
-                            background: 'white', borderRadius: '20px', overflow: 'hidden',
-                            boxShadow: 'var(--shadow-sm)', border: '1px solid #f0f0f0',
-                            display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease',
-                            cursor: 'pointer'
-                        }}
-                            onClick={() => setSelectedArticle(post)}
+                     ) : articles.map(post => (
+                        <Link 
+                            key={post.id} 
+                            to={`/article/${post.id}`}
+                            style={{
+                                textDecoration: 'none', color: 'inherit',
+                                background: 'white', borderRadius: '20px', overflow: 'hidden',
+                                boxShadow: 'var(--shadow-sm)', border: '1px solid #f0f0f0',
+                                display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease'
+                            }}
+                            className="knowledge-card"
                             onMouseOver={e => e.currentTarget.style.transform = 'translateY(-10px)'}
                             onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                         >
@@ -111,101 +114,14 @@ const KnowledgeHub = () => {
                                         </div>
                                         {post.author}
                                     </div>
-                                    <button
-                                        style={{ background: 'none', border: 'none', color: 'var(--trust-blue)', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <div style={{ color: 'var(--trust-blue)', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         Read Brief <ArrowRight size={16} />
-                                    </button>
+                                    </div>
                                 </div>
                             </div>
-                        </article>
+                        </Link>
                     ))}
                 </div>
-
-                {/* Article Reader Modal */}
-                {selectedArticle && (
-                    <div className="modal-overlay">
-                        <div className="modal-container">
-                            <button
-                                onClick={() => setSelectedArticle(null)}
-                                className="modal-close-btn"
-                                style={{ position: 'absolute', background: 'white', border: 'none', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10 }}>
-                                <X size={24} color="var(--trust-blue)" />
-                            </button>
-
-                             <div className="modal-image-container" style={{ height: '350px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
-                                <img 
-                                    src={selectedArticle.image || FALLBACK_IMAGE} 
-                                    alt={selectedArticle.title} 
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                                    onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
-                                />
-                                <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', height: '150px', background: 'linear-gradient(to top, white, transparent)' }}></div>
-                            </div>
-
-                            <div className="modal-scroll-container">
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                                    <span style={{ padding: '6px 16px', background: 'var(--sky-blue)', color: 'var(--trust-blue)', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 800 }}>
-                                        {selectedArticle.category}
-                                    </span>
-                                    <span style={{ fontSize: '0.9rem', color: '#888', fontWeight: 600 }}>{selectedArticle.date} &bull; {calculateReadTime(selectedArticle.content)}</span>
-                                </div>
-
-                                <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', marginBottom: '24px', color: 'var(--trust-blue)', lineHeight: 1.1, letterSpacing: '-1px' }}>{selectedArticle.title}</h2>
-
-                                <div style={{ color: '#333', lineHeight: '1.8', fontSize: '1.15rem', maxWidth: '100%' }}>
-                                    {selectedArticle.content ? (
-                                        <div style={{ whiteSpace: 'pre-line' }}>
-                                            {selectedArticle.content.split('\n\n').map((para, i) => (
-                                                <p key={i} style={{ marginBottom: '20px' }}>{para}</p>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>Expert content for this article is being finalized. Please stay tuned for the full SunGate brief.</p>
-                                    )}
-                                </div>
-
-                                <div style={{ marginTop: '50px', padding: '30px', background: 'var(--bg-off-white)', borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                                    <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-                                        <User size={30} color="var(--trust-blue)" />
-                                    </div>
-                                    <div style={{ flex: 1, minWidth: '200px' }}>
-                                        <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{selectedArticle.author}</div>
-                                        <div style={{ fontSize: '0.9rem', color: '#777' }}>SunGate Zambia Content Expert</div>
-                                    </div>
-                                    <div className="badge badge-verified"><ShieldCheck size={14} /> Fact Checked</div>
-                                </div>
-
-                                {/* Related Articles */}
-                                <div style={{ marginTop: '60px' }}>
-                                    <h3 style={{ marginBottom: '24px', fontSize: '1.5rem', color: 'var(--trust-blue)' }}>You might also like...</h3>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                                        {articles.filter(a => a.id !== selectedArticle.id).slice(0, 2).map(rel => (
-                                            <div
-                                                key={rel.id}
-                                                onClick={() => {
-                                                    setSelectedArticle(rel)
-                                                    document.querySelector('.article-scroll-container')?.scrollTo(0, 0)
-                                                }}
-                                                style={{ cursor: 'pointer', background: '#fcfcfc', borderRadius: '16px', overflow: 'hidden', border: '1px solid #eee' }}
-                                            >
-                                                 <div style={{ height: '120px' }}>
-                                                    <img 
-                                                        src={rel.image || FALLBACK_IMAGE} 
-                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                                                        onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
-                                                    />
-                                                </div>
-                                                <div style={{ padding: '16px' }}>
-                                                    <h4 style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>{rel.title}</h4>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
             </div>
         </section>

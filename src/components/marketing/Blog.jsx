@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, BookOpen, Clock, User, ArrowRight, X, ShieldCheck } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='133' viewBox='0 0 200 133'%3E%3Crect width='200' height='133' fill='%23f0f4f8'/%3E%3Ccircle cx='100' cy='55' r='22' fill='%23FFB300'/%3E%3Cpath d='M100 25v6M100 78v6M70 55h6M118 55h6M78 35l4 4M116 69l4 4M78 75l4-4M116 41l4-4' stroke='%23FFB300' stroke-width='3' stroke-linecap='round'/%3E%3Ctext x='100' y='105' text-anchor='middle' font-size='10' fill='%23aaa' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-const BlogCard = ({ category, title, excerpt, image, date, author, onClick }) => (
-  <div 
-    onClick={onClick}
-    style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid #eee', transition: 'transform 0.3s ease', display: 'flex', flexDirection: 'column', cursor: 'pointer' }} 
+const BlogCard = ({ id, category, title, excerpt, image, date, author }) => (
+  <Link 
+    to={`/article/${id}`}
+    style={{ textDecoration: 'none', color: 'inherit', background: 'white', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid #eee', transition: 'transform 0.3s ease', display: 'flex', flexDirection: 'column' }} 
     className="blog-card"
   >
     <div style={{ height: '240px', position: 'relative' }}>
@@ -39,20 +40,16 @@ const BlogCard = ({ category, title, excerpt, image, date, author, onClick }) =>
       </div>
       <h3 style={{ fontSize: '1.5rem', marginBottom: '16px', lineHeight: 1.3 }}>{title}</h3>
       <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: '24px', lineHeight: 1.6 }}>{excerpt}</p>
-      <button style={{ 
-        background: 'none', 
-        border: 'none', 
+      <div style={{ 
         color: 'var(--trust-blue)', 
         fontWeight: 700, 
         display: 'flex', 
         alignItems: 'center', 
         gap: '8px',
-        padding: 0,
-        cursor: 'pointer',
         marginTop: 'auto'
       }}>
         Read Article <ArrowRight size={18} />
-      </button>
+      </div>
     </div>
     <style>{`
       .blog-card:hover {
@@ -60,7 +57,7 @@ const BlogCard = ({ category, title, excerpt, image, date, author, onClick }) =>
         box-shadow: var(--shadow-lg);
       }
     `}</style>
-  </div>
+  </Link>
 );
 
 const Blog = () => {
@@ -227,73 +224,13 @@ const Blog = () => {
           ) : (
             <div className="grid grid-3" style={{ gap: '40px' }}>
               {filteredPosts.map((post) => (
-                <BlogCard key={post.id} {...post} onClick={() => setSelectedArticle(post)} />
+                <BlogCard key={post.id} {...post} />
               ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* Article Modal Reader */}
-      {selectedArticle && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000, padding: '20px' }}>
-          <div style={{ background: 'white', borderRadius: '24px', width: '100%', maxWidth: '900px', height: '90vh', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-            <button 
-              onClick={() => setSelectedArticle(null)}
-              style={{ position: 'absolute', top: '20px', right: '20px', background: 'white', border: 'none', borderRadius: '50%', padding: '10px', cursor: 'pointer', zIndex: 10, boxShadow: 'var(--shadow-lg)' }}
-            >
-              <X size={24} color="var(--trust-blue)" />
-            </button>
-
-            <div style={{ height: '400px', overflow: 'hidden', flexShrink: 0 }}>
-              <img 
-                src={selectedArticle.image || FALLBACK_IMAGE} 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                alt={selectedArticle.title} 
-                onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
-              />
-            </div>
-
-            <div style={{ padding: '40px', overflowY: 'auto', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                <span style={{ padding: '6px 16px', background: 'var(--sky-blue)', color: 'var(--trust-blue)', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 800 }}>
-                  {selectedArticle.category}
-                </span>
-                <span style={{ fontSize: '0.9rem', color: '#888' }}>
-                  {selectedArticle.date} &bull; {calculateReadTime(selectedArticle.content)}
-                </span>
-              </div>
-
-              <h2 style={{ fontSize: '2.5rem', marginBottom: '24px', color: 'var(--trust-blue)', lineHeight: 1.2 }}>{selectedArticle.title}</h2>
-
-              <div style={{ color: '#333', lineHeight: '1.8', fontSize: '1.1rem' }}>
-                {selectedArticle.content ? (
-                  <div style={{ whiteSpace: 'pre-line' }}>
-                    {selectedArticle.content.split('\n\n').map((para, i) => (
-                      <p key={i} style={{ marginBottom: '20px' }}>{para}</p>
-                    ))}
-                  </div>
-                ) : (
-                  <p>Expert content for this article is being finalized. Please stay tuned for the full SunGate brief.</p>
-                )}
-              </div>
-
-              <div style={{ marginTop: '50px', padding: '30px', background: '#f8f9fa', borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-                  <User size={30} color="var(--trust-blue)" />
-                </div>
-                <div>
-                  <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{selectedArticle.author}</div>
-                  <div style={{ fontSize: '0.9rem', color: '#777' }}>SunGate Zambia Content Expert</div>
-                </div>
-                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--zambia-green)', fontWeight: 700, fontSize: '0.9rem' }}>
-                  <ShieldCheck size={18} /> Fact Checked
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Newsletter */}
       <section style={{ padding: '80px 0', background: 'var(--trust-blue)', color: 'white' }}>

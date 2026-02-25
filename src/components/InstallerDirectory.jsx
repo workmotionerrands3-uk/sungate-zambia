@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { MapPin, Star, ShieldCheck, MessageCircle, Phone, Award, Search, Users, Briefcase, ChevronRight, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import ImageLightbox from './ImageLightbox'
 
 const FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f0f4f8'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23e2e8f0'/%3E%3Cpath d='M50 35v30M35 50h30' stroke='%2394a3b8' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E";
 
@@ -13,6 +14,7 @@ const InstallerDirectory = ({ session, onNotify }) => {
     const [selectedInstaller, setSelectedInstaller] = useState(null)
     const [installerWorks, setInstallerWorks] = useState({})
     const [viewingPortfolio, setViewingPortfolio] = useState(null)
+    const [lightboxData, setLightboxData] = useState({ isOpen: false, url: '', alt: '' })
 
     const handleGetQuote = (installer) => {
         if (!session) {
@@ -210,7 +212,8 @@ const InstallerDirectory = ({ session, onNotify }) => {
                                                     <img 
                                                         src={work.images[0]} 
                                                         alt={work.title} 
-                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                                        onClick={() => setLightboxData({ isOpen: true, url: work.images[0], alt: work.title })}
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }} 
                                                         onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_LOGO; }}
                                                     />
                                                 ) : (
@@ -274,7 +277,8 @@ const InstallerDirectory = ({ session, onNotify }) => {
                                                                 key={idx} 
                                                                 src={img} 
                                                                 alt={`${work.title} ${idx}`} 
-                                                                style={projectImageStyle} 
+                                                                onClick={() => setLightboxData({ isOpen: true, url: img, alt: work.title })}
+                                                                style={{ ...projectImageStyle, cursor: 'zoom-in' }} 
                                                                 onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_LOGO; }}
                                                             />
                                                         ))
@@ -301,6 +305,13 @@ const InstallerDirectory = ({ session, onNotify }) => {
                     </div>
                 )}
             </div>
+
+            <ImageLightbox 
+                isOpen={lightboxData.isOpen}
+                onClose={() => setLightboxData({ ...lightboxData, isOpen: false })}
+                imageUrl={lightboxData.url}
+                altText={lightboxData.alt}
+            />
         </section>
     )
 }

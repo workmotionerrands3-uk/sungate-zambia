@@ -43,6 +43,7 @@ import PublicNavbar from "./components/marketing/PublicNavbar.jsx";
 import PublicCalculator from "./components/marketing/PublicCalculator.jsx";
 import PartnerLanding from "./components/marketing/PartnerLanding.jsx";
 import Blog from "./components/marketing/Blog.jsx";
+import ArticlePage from "./components/marketing/ArticlePage.jsx";
 import MarketingFooter from "./components/marketing/MarketingFooter.jsx";
 
 // Standard UI Components
@@ -805,6 +806,7 @@ const App = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/help" element={<HelpCenterPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/article/:id" element={<ArticlePage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
           
           {/* Catch-all to root */}
