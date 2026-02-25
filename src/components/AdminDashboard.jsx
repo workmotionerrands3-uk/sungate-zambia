@@ -13,6 +13,7 @@ const AdminDashboard = ({ profile }) => {
     const [products, setProducts] = useState([])
     const [users, setUsers] = useState([])
     const [inquiries, setInquiries] = useState([])
+    const [subscribers, setSubscribers] = useState([])
     const [logs, setLogs] = useState([])
     const [analytics, setAnalytics] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -88,6 +89,10 @@ const AdminDashboard = ({ profile }) => {
 
                 if (error) throw error
                 setInquiries(data || [])
+            } else if (activeTab === 'subscribers') {
+                const { data, error } = await supabase.from('newsletter_subscribers').select('*').order('created_at', { ascending: false })
+                if (error) throw error
+                setSubscribers(data || [])
             } else if (activeTab === 'analytics') {
 
                 // Fetch real analytics data
@@ -386,6 +391,12 @@ const AdminDashboard = ({ profile }) => {
                         Manage Users
                     </button>
                     <button
+                        onClick={() => setActiveTab('subscribers')}
+                        style={{ background: 'none', border: 'none', padding: '10px 0', borderBottom: activeTab === 'subscribers' ? '3px solid var(--sun-orange)' : 'none', fontWeight: activeTab === 'subscribers' ? 700 : 400, color: activeTab === 'subscribers' ? 'var(--trust-blue)' : '#666' }}
+                    >
+                        Subscribers
+                    </button>
+                    <button
                         onClick={() => setActiveTab('inquiries')}
                         style={{ background: 'none', border: 'none', padding: '10px 0', borderBottom: activeTab === 'inquiries' ? '3px solid var(--sun-orange)' : 'none', fontWeight: activeTab === 'inquiries' ? 700 : 400, color: activeTab === 'inquiries' ? 'var(--trust-blue)' : '#666' }}
                     >
@@ -657,6 +668,67 @@ const AdminDashboard = ({ profile }) => {
                             </table>
                         </div>
                     </>
+                )}
+
+                {!loading && activeTab === 'subscribers' && (
+                    <div style={{ background: 'white', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
+                        <div style={{ padding: '20px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ margin: 0 }}>Newsletter Subscribers ({subscribers.length})</h3>
+                            <button 
+                                className="btn btn-secondary" 
+                                onClick={() => {
+                                    const csv = subscribers.map(s => s.email).join('\n');
+                                    const blob = new Blob([csv], { type: 'text/csv' });
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.setAttribute('hidden', '');
+                                    a.setAttribute('href', url);
+                                    a.setAttribute('download', 'subscribers.csv');
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                }}
+                                style={{ fontSize: '0.8rem' }}
+                            >
+                                Export CSV
+                            </button>
+                        </div>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead style={{ background: '#f8f9fa' }}>
+                                <tr>
+                                    <th style={{ textAlign: 'left', padding: '15px', borderBottom: '1px solid #eee' }}>Email Address</th>
+                                    <th style={{ textAlign: 'left', padding: '15px', borderBottom: '1px solid #eee' }}>Joined Date</th>
+                                    <th style={{ textAlign: 'right', padding: '15px', borderBottom: '1px solid #eee' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {subscribers.map(sub => (
+                                    <tr key={sub.id} style={{ borderBottom: '1px solid #eee' }}>
+                                        <td style={{ padding: '15px' }}>{sub.email}</td>
+                                        <td style={{ padding: '15px', color: '#666' }}>{new Date(sub.created_at).toLocaleDateString()}</td>
+                                        <td style={{ padding: '15px', textAlign: 'right' }}>
+                                            <button 
+                                                onClick={async () => {
+                                                    if(confirm('Delete subscriber?')) {
+                                                        const { error } = await supabase.from('newsletter_subscribers').delete().eq('id', sub.id);
+                                                        if (!error) fetchData();
+                                                    }
+                                                }}
+                                                style={{ background: 'none', border: 'none', color: 'red', cursor: 'pointer' }}
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {subscribers.length === 0 && (
+                                    <tr>
+                                        <td colSpan="3" style={{ textAlign: 'center', padding: '40px', color: '#999' }}>No subscribers yet</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 {!loading && activeTab === 'analytics' && analytics && (

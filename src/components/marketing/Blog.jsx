@@ -70,6 +70,9 @@ const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedArticle, setSelectedArticle] = useState(null);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [subscribing, setSubscribing] = useState(false);
+  const [subscribeStatus, setSubscribeStatus] = useState(null); // 'success', 'error', null
 
   const categories = ["All", "Buying Guides", "Maintenance", "Solar Tech", "Zambia Market"];
   
@@ -108,6 +111,38 @@ const Blog = () => {
     const matchesCategory = activeCategory === 'All' || post.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!newsletterEmail || !newsletterEmail.includes('@')) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    setSubscribing(true);
+    setSubscribeStatus(null);
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert([{ email: newsletterEmail }]);
+      
+      if (error) {
+        if (error.code === '23505') { // Unique constraint violation
+          setSubscribeStatus('success'); // Treating already-subscribed as success for basic UX
+        } else {
+          throw error;
+        }
+      } else {
+        setSubscribeStatus('success');
+      }
+      setNewsletterEmail('');
+    } catch (err) {
+      console.error('Subscription error:', err);
+      setSubscribeStatus('error');
+    } finally {
+      setSubscribing(false);
+    }
+  };
 
   return (
     <div style={{ background: '#f8f9fa', minHeight: '100vh' }}>
@@ -270,16 +305,32 @@ const Blog = () => {
           <p style={{ opacity: 0.9, marginBottom: '32px', fontSize: '1.1rem' }}>
             Join 5,000+ Zambians receiving weekly solar tips and exclusive hardware deals.
           </p>
-          <div className="newsletter-form-container" style={{ display: 'flex', gap: '12px', maxWidth: '500px', margin: '0 auto' }}>
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
-              style={{ flex: 1, padding: '16px 24px', borderRadius: '12px', border: 'none', outline: 'none', minWidth: '0' }} 
-            />
-            <button className="btn btn-primary" style={{ padding: '0 32px', whiteSpace: 'nowrap' }}>
-              Subscribe
-            </button>
-          </div>
+          <form onSubmit={handleSubscribe} className="newsletter-form-container" style={{ display: 'flex', gap: '12px', maxWidth: '600px', margin: '0 auto', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '12px', width: '100%' }} className="mobile-stack">
+              <input 
+                type="email" 
+                placeholder="Enter your email" 
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                required
+                style={{ flex: 1, padding: '16px 24px', borderRadius: '12px', border: 'none', outline: 'none', minWidth: '0', color: '#333' }} 
+              />
+              <button 
+                type="submit" 
+                disabled={subscribing}
+                className="btn btn-primary" 
+                style={{ padding: '0 32px', whiteSpace: 'nowrap', background: 'var(--sun-orange)', opacity: subscribing ? 0.7 : 1 }}
+              >
+                {subscribing ? 'Joining...' : 'Subscribe'}
+              </button>
+            </div>
+            {subscribeStatus === 'success' && (
+              <p style={{ marginTop: '15px', color: 'var(--sun-gold)', fontWeight: 700 }}>Welcome to the community! You're subscribed.</p>
+            )}
+            {subscribeStatus === 'error' && (
+              <p style={{ marginTop: '15px', color: '#ffb3b3', fontWeight: 600 }}>Oops! Something went wrong. Please try again.</p>
+            )}
+          </form>
         </div>
         <style>{`
           @media (max-width: 480px) {
