@@ -3,6 +3,8 @@ import { supabase } from '../lib/supabase'
 import { ShieldCheck, Plus, Trash2, Edit2, CheckCircle, XCircle, Search, Save, X, Briefcase } from 'lucide-react'
 import InstallerWorksModal from './InstallerWorksModal'
 
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='133' viewBox='0 0 200 133'%3E%3Crect width='200' height='133' fill='%23f0f4f8'/%3E%3Ccircle cx='100' cy='55' r='22' fill='%23FFB300'/%3E%3Cpath d='M100 25v6M100 78v6M70 55h6M118 55h6M78 35l4 4M116 69l4 4M78 75l4-4M116 41l4-4' stroke='%23FFB300' stroke-width='3' stroke-linecap='round'/%3E%3Ctext x='100' y='105' text-anchor='middle' font-size='10' fill='%23aaa' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
+
 const AdminDashboard = ({ profile }) => {
     const [activeTab, setActiveTab] = useState('installers')
     const [installers, setInstallers] = useState([])
@@ -467,7 +469,12 @@ const AdminDashboard = ({ profile }) => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {articles.map(article => (
                                 <div key={article.id} style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', display: 'flex', gap: '20px', alignItems: 'center' }}>
-                                    <img src={article.image} style={{ width: '80px', height: '80px', borderRadius: '8px', objectFit: 'cover' }} />
+                                    <img 
+                                        src={article.image || FALLBACK_IMAGE} 
+                                        style={{ width: '80px', height: '80px', borderRadius: '8px', objectFit: 'cover' }} 
+                                        alt={article.title}
+                                        onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+                                    />
                                     <div style={{ flex: 1 }}>
                                         <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>{article.title}</h3>
                                         <p style={{ color: '#888', fontSize: '0.8rem' }}>{article.category} • {article.author}</p>
@@ -513,7 +520,12 @@ const AdminDashboard = ({ profile }) => {
                         <div className="grid grid-3">
                             {products.map(product => (
                                 <div key={product.id} style={{ background: 'white', padding: '15px', borderRadius: '12px', boxShadow: 'var(--shadow-sm)' }}>
-                                    <img src={product.image || 'https://via.placeholder.com/150'} alt={product.name} style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px', marginBottom: '12px' }} />
+                                    <img 
+                                        src={product.image || FALLBACK_IMAGE} 
+                                        alt={product.name} 
+                                        style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px', marginBottom: '12px' }} 
+                                        onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+                                    />
                                     <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>{product.name}</h3>
                                     <p style={{ fontWeight: 'bold', color: 'var(--sun-orange)', marginBottom: '4px' }}>{product.price}</p>
                                     <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '12px' }}>{product.category}</p>

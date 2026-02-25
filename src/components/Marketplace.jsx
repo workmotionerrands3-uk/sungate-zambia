@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import { ShieldCheck, Filter, ShoppingCart, Info, CheckCircle, Heart, Search, LayoutGrid, Box, Battery, Zap, Droplets, Sun, Waves, ArrowUpDown, SlidersHorizontal, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='133' viewBox='0 0 200 133'%3E%3Crect width='200' height='133' fill='%23f0f4f8'/%3E%3Ccircle cx='100' cy='55' r='22' fill='%23FFB300'/%3E%3Cpath d='M100 25v6M100 78v6M70 55h6M118 55h6M78 35l4 4M116 69l4 4M78 75l4-4M116 41l4-4' stroke='%23FFB300' stroke-width='3' stroke-linecap='round'/%3E%3Ctext x='100' y='105' text-anchor='middle' font-size='10' fill='%23aaa' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
+
 const ProductImageGallery = ({ images, primaryImage, name, onToggleSave, isSaved, productId }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const galleryImages = images && images.length > 0 ? images : [primaryImage];
+    const galleryImages = images && images.length > 0 ? images : [primaryImage].filter(Boolean);
 
     const nextImage = (e) => {
         e.stopPropagation();
@@ -19,10 +21,11 @@ const ProductImageGallery = ({ images, primaryImage, name, onToggleSave, isSaved
     return (
         <div className="product-image-container" style={{ width: '100%', aspectRatio: '3/2', background: '#f5f5f5', overflow: 'hidden', position: 'relative' }}>
             <img
-                src={galleryImages[currentIndex]}
+                src={galleryImages[currentIndex] || FALLBACK_IMAGE}
                 alt={`${name} - Image ${currentIndex + 1}`}
                 className="product-image"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'opacity 0.3s ease' }}
+                onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
             />
             
             {galleryImages.length > 1 && (

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Search, BookOpen, Clock, User, ArrowRight, X, ShieldCheck } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='133' viewBox='0 0 200 133'%3E%3Crect width='200' height='133' fill='%23f0f4f8'/%3E%3Ccircle cx='100' cy='55' r='22' fill='%23FFB300'/%3E%3Cpath d='M100 25v6M100 78v6M70 55h6M118 55h6M78 35l4 4M116 69l4 4M78 75l4-4M116 41l4-4' stroke='%23FFB300' stroke-width='3' stroke-linecap='round'/%3E%3Ctext x='100' y='105' text-anchor='middle' font-size='10' fill='%23aaa' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
+
 const BlogCard = ({ category, title, excerpt, image, date, author, onClick }) => (
   <div 
     onClick={onClick}
@@ -9,7 +11,12 @@ const BlogCard = ({ category, title, excerpt, image, date, author, onClick }) =>
     className="blog-card"
   >
     <div style={{ height: '240px', position: 'relative' }}>
-        <img src={image || 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=400'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={title} />
+        <img 
+            src={image || FALLBACK_IMAGE} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            alt={title} 
+            onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+        />
         <div style={{ 
           position: 'absolute', 
           top: '20px', 
@@ -204,7 +211,12 @@ const Blog = () => {
             </button>
 
             <div style={{ height: '400px', overflow: 'hidden', flexShrink: 0 }}>
-              <img src={selectedArticle.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={selectedArticle.title} />
+              <img 
+                src={selectedArticle.image || FALLBACK_IMAGE} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                alt={selectedArticle.title} 
+                onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+              />
             </div>
 
             <div style={{ padding: '40px', overflowY: 'auto', flex: 1 }}>

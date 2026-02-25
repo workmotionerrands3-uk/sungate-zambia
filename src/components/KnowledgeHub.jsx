@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { BookOpen, Calendar, ArrowRight, User, Tag, X, CheckCircle, Info, ShieldCheck } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='133' viewBox='0 0 200 133'%3E%3Crect width='200' height='133' fill='%23f0f4f8'/%3E%3Ccircle cx='100' cy='55' r='22' fill='%23FFB300'/%3E%3Cpath d='M100 25v6M100 78v6M70 55h6M118 55h6M78 35l4 4M116 69l4 4M78 75l4-4M116 41l4-4' stroke='%23FFB300' stroke-width='3' stroke-linecap='round'/%3E%3Ctext x='100' y='105' text-anchor='middle' font-size='10' fill='%23aaa' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
+
 const KnowledgeHub = () => {
     const [articles, setArticles] = useState([])
     const [loading, setLoading] = useState(true)
@@ -73,8 +75,13 @@ const KnowledgeHub = () => {
                             onMouseOver={e => e.currentTarget.style.transform = 'translateY(-10px)'}
                             onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                         >
-                            <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
-                                <img src={post.image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                             <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
+                                <img 
+                                    src={post.image || FALLBACK_IMAGE} 
+                                    alt={post.title} 
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                    onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+                                />
                                 <div style={{
                                     position: 'absolute', top: '16px', left: '16px',
                                     background: 'rgba(255,255,255,0.95)', padding: '6px 12px',
@@ -125,8 +132,13 @@ const KnowledgeHub = () => {
                                 <X size={24} color="var(--trust-blue)" />
                             </button>
 
-                            <div className="modal-image-container" style={{ height: '350px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
-                                <img src={selectedArticle.image} alt={selectedArticle.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                             <div className="modal-image-container" style={{ height: '350px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                                <img 
+                                    src={selectedArticle.image || FALLBACK_IMAGE} 
+                                    alt={selectedArticle.title} 
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                    onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+                                />
                                 <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', height: '150px', background: 'linear-gradient(to top, white, transparent)' }}></div>
                             </div>
 
@@ -176,8 +188,12 @@ const KnowledgeHub = () => {
                                                 }}
                                                 style={{ cursor: 'pointer', background: '#fcfcfc', borderRadius: '16px', overflow: 'hidden', border: '1px solid #eee' }}
                                             >
-                                                <div style={{ height: '120px' }}>
-                                                    <img src={rel.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                 <div style={{ height: '120px' }}>
+                                                    <img 
+                                                        src={rel.image || FALLBACK_IMAGE} 
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                                        onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+                                                    />
                                                 </div>
                                                 <div style={{ padding: '16px' }}>
                                                     <h4 style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>{rel.title}</h4>

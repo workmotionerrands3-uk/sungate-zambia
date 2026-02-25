@@ -241,6 +241,7 @@ const AuthForm = ({ onClose, onAuthComplete, isFullPage = false, isUpdatePasswor
                                 <Mail style={{ position: 'absolute', left: '12px', top: '14px', color: '#888' }} size={18} />
                                 <input
                                     type="email" placeholder="Email Address" required
+                                    autoComplete="email"
                                     value={email} onChange={e => setEmail(e.target.value)}
                                     style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '8px', border: '1px solid #ddd' }}
                                 />
@@ -251,6 +252,7 @@ const AuthForm = ({ onClose, onAuthComplete, isFullPage = false, isUpdatePasswor
                                 <Lock style={{ position: 'absolute', left: '12px', top: '14px', color: '#888' }} size={18} />
                                 <input
                                     type="password" placeholder={isUpdatePassword ? "New Password" : "Password"} required
+                                    autoComplete={isLogin ? "current-password" : "new-password"}
                                     value={password} onChange={e => setPassword(e.target.value)}
                                     style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '8px', border: '1px solid #ddd' }}
                                 />

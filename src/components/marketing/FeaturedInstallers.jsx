@@ -2,10 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Star, MapPin, ArrowRight } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
+const FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f0f4f8'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23e2e8f0'/%3E%3Cpath d='M50 35v30M35 50h30' stroke='%2394a3b8' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E";
+
 const InstallerCard = ({ name, location, rating, projects, logo }) => (
   <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid #eee' }}>
     <div style={{ height: '160px', background: '#e3f2fd', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <img src={logo || 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=400'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={name} />
+        <img 
+            src={logo || FALLBACK_LOGO} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            alt={name} 
+            onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_LOGO; }}
+        />
     </div>
     <div style={{ padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>

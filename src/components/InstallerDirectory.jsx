@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
-import { MapPin, Star, ShieldCheck, MessageCircle, Phone, Award, Search, Users } from 'lucide-react'
+import { MapPin, Star, ShieldCheck, MessageCircle, Phone, Award, Search, Users, Briefcase, ChevronRight, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+
+const FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f0f4f8'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23e2e8f0'/%3E%3Cpath d='M50 35v30M35 50h30' stroke='%2394a3b8' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E";
 
 const InstallerDirectory = ({ session, onNotify }) => {
     const [search, setSearch] = useState('')
@@ -118,13 +119,20 @@ const InstallerDirectory = ({ session, onNotify }) => {
                             <p>No installers matching your search found.</p>
                         </div>
                     ) : filteredInstallers.map(ins => (
-                        <div key={ins.id} style={{
-                            background: 'white', padding: '30px', borderRadius: 'var(--radius-lg)',
-                            boxShadow: 'var(--shadow-sm)', border: '1px solid #eee',
-                            display: 'flex', gap: '24px', flexWrap: 'wrap'
+                        <div key={ins.id} className="hover-lift" style={{
+                            background: 'white', padding: '24px', borderRadius: '20px',
+                            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)',
+                            border: '1px solid #f1f5f9',
+                            display: 'flex', gap: '20px', flexWrap: 'wrap',
+                            transition: 'all 0.3s ease'
                         }}>
-                            <div style={{ width: '80px', height: '80px', borderRadius: 'var(--radius-md)', overflow: 'hidden', background: '#f5f5f5' }}>
-                                <img src={ins.logo} alt={ins.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <div style={{ width: '70px', height: '70px', borderRadius: '14px', overflow: 'hidden', background: '#f8fafc', border: '1px solid #f1f5f9' }}>
+                                <img 
+                                    src={ins.logo || FALLBACK_LOGO} 
+                                    alt={ins.name} 
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                    onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_LOGO; }}
+                                />
                             </div>
 
                             <div style={{ flex: 1, minWidth: '250px' }}>
@@ -151,22 +159,22 @@ const InstallerDirectory = ({ session, onNotify }) => {
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                     {ins.services.map(s => (
-                                        <span key={s} style={{ padding: '4px 10px', background: '#f0f0f0', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>{s}</span>
+                                        <span key={s} style={{ padding: '4px 10px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 600, color: '#475569' }}>{s}</span>
                                     ))}
                                 </div>
 
-                                <div style={{ marginTop: '20px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                <div style={{ marginTop: '24px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                     <a
                                         href={`https://wa.me/260${whatsappNumber}?text=Hi%2C%20I%27d%20like%20to%20request%20installer%20services%20from%20${encodeURIComponent(ins.name)}%20in%20${encodeURIComponent(ins.location)}.%20Can%20you%20help%20me%20connect%20with%20them%3F`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="btn btn-primary"
-                                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 18px', fontSize: '0.9rem' }}
                                     >
-                                        <MessageCircle size={18} />
-                                        Request Installer
+                                        <MessageCircle size={16} />
+                                        Hire Now
                                     </a>
                                     <button 
                                         onClick={() => {
@@ -174,30 +182,43 @@ const InstallerDirectory = ({ session, onNotify }) => {
                                             fetchPortfolio(ins.id)
                                         }}
                                         className="btn btn-secondary"
-                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 18px', fontSize: '0.9rem' }}
                                     >
-                                        <Award size={18} />
-                                        View Portfolio
+                                        <Briefcase size={16} />
+                                        Portfolio
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Portfolio Mini-Gallery (Optional inline) */}
+                             {/* Portfolio Mini-Gallery */}
                             {installerWorks[ins.id] && installerWorks[ins.id].length > 0 && (
-                                <div style={{ width: '100%', marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
-                                    <h4 style={{ fontSize: '1rem', marginBottom: '12px', color: 'var(--trust-blue)' }}>Recent Projects</h4>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '12px' }}>
+                                <div style={{ width: '100%', marginTop: '20px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                        <h4 style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recent Projects</h4>
+                                        <button 
+                                            onClick={() => { setViewingPortfolio(ins); fetchPortfolio(ins.id); }}
+                                            style={{ background: 'none', border: 'none', color: 'var(--trust-blue)', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '2px' }}
+                                        >
+                                            See All <ChevronRight size={14} />
+                                        </button>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                                         {installerWorks[ins.id].slice(0, 3).map(work => (
-                                            <div key={work.id} style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #eee' }}>
+                                            <div key={work.id} style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid #f1f5f9', background: '#f8fafc', position: 'relative', aspectRatio: '4/3' }}>
                                                 {work.images?.[0] ? (
-                                                    <img src={work.images[0]} alt={work.title} style={{ width: '100%', height: '100px', objectFit: 'cover' }} />
+                                                    <img 
+                                                        src={work.images[0]} 
+                                                        alt={work.title} 
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                                        onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_LOGO; }}
+                                                    />
                                                 ) : (
-                                                    <div style={{ width: '100%', height: '100px', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
-                                                        <Award size={24} />
+                                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
+                                                        <Briefcase size={20} />
                                                     </div>
                                                 )}
-                                                <div style={{ padding: '8px' }}>
-                                                    <div style={{ fontSize: '0.8rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{work.title}</div>
+                                                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 8px', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(4px)', fontSize: '0.65rem', fontWeight: 700, borderTop: '1px solid #f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {work.title}
                                                 </div>
                                             </div>
                                         ))}
@@ -248,7 +269,13 @@ const InstallerDirectory = ({ session, onNotify }) => {
                                                 <div style={projectImagesGridStyle}>
                                                     {work.images && work.images.length > 0 ? (
                                                         work.images.map((img, idx) => (
-                                                            <img key={idx} src={img} alt={`${work.title} ${idx}`} style={projectImageStyle} />
+                                                            <img 
+                                                                key={idx} 
+                                                                src={img} 
+                                                                alt={`${work.title} ${idx}`} 
+                                                                style={projectImageStyle} 
+                                                                onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_LOGO; }}
+                                                            />
                                                         ))
                                                     ) : (
                                                         <div style={{ background: '#f8f9fa', padding: '40px', textAlign: 'center', gridColumn: '1 / -1', borderRadius: '12px' }}>

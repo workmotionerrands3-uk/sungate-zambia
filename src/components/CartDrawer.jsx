@@ -1,5 +1,6 @@
-import React from 'react'
 import { X, Trash2, ShoppingBag, ArrowRight } from 'lucide-react'
+
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='133' viewBox='0 0 200 133'%3E%3Crect width='200' height='133' fill='%23f0f4f8'/%3E%3Ccircle cx='100' cy='55' r='22' fill='%23FFB300'/%3E%3Cpath d='M100 25v6M100 78v6M70 55h6M118 55h6M78 35l4 4M116 69l4 4M78 75l4-4M116 41l4-4' stroke='%23FFB300' stroke-width='3' stroke-linecap='round'/%3E%3Ctext x='100' y='105' text-anchor='middle' font-size='10' fill='%23aaa' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
 
 const CartDrawer = ({ isOpen, onClose, items, onRemove, onClear, onNotify, onQuoteRequest }) => {
     const total = items.reduce((sum, item) => {
@@ -70,8 +71,13 @@ const CartDrawer = ({ isOpen, onClose, items, onRemove, onClear, onNotify, onQuo
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             {items.map((item, index) => (
                                 <div key={`${item.id}-${index}`} style={{ display: 'flex', gap: '16px', borderBottom: '1px solid #f5f5f5', paddingBottom: '20px' }}>
-                                    <div style={{ width: '80px', height: '80px', borderRadius: '8px', background: '#f5f5f5', overflow: 'hidden' }}>
-                                        <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                     <div style={{ width: '80px', height: '80px', borderRadius: '8px', background: '#f5f5f5', overflow: 'hidden' }}>
+                                        <img 
+                                            src={item.image || FALLBACK_IMAGE} 
+                                            alt={item.name} 
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                            onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+                                        />
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <h4 style={{ fontSize: '0.95rem', marginBottom: '4px' }}>{item.name}</h4>
