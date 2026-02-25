@@ -88,7 +88,7 @@ const LoadSheddingPulse = () => {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }} className="mobile-full">
           <a 
-            href="https://www.zesco.co.zm" 
+            href="https://portal.zesco.co.zm/services/loadmanagement" 
             target="_blank" 
             rel="noopener noreferrer"
             className="btn btn-primary mobile-full"
