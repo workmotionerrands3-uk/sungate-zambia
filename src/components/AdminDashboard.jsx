@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { ShieldCheck, Plus, Trash2, Edit2, CheckCircle, XCircle, Search, Save, X } from 'lucide-react'
+import { ShieldCheck, Plus, Trash2, Edit2, CheckCircle, XCircle, Search, Save, X, Briefcase } from 'lucide-react'
+import InstallerWorksModal from './InstallerWorksModal'
 
 const AdminDashboard = ({ profile }) => {
     const [activeTab, setActiveTab] = useState('installers')
@@ -27,6 +28,8 @@ const AdminDashboard = ({ profile }) => {
     const [logoPreview, setLogoPreview] = useState(null)
     const [settings, setSettings] = useState({ zesco_rate: 1.35, support_phone: '0974300472', commission_rate: 5 })
     const [pendingPartners, setPendingPartners] = useState([])
+    const [showWorksModal, setShowWorksModal] = useState(false)
+    const [selectedInstallerForWorks, setSelectedInstallerForWorks] = useState(null)
 
     useEffect(() => {
         fetchData()
@@ -437,8 +440,18 @@ const AdminDashboard = ({ profile }) => {
                                     <h3 style={{ fontSize: '1.1rem', marginBottom: '8px' }}>{installer.name}</h3>
                                     <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '16px' }}>{installer.location}</p>
                                     <div style={{ display: 'flex', gap: '10px' }}>
-                                        <button onClick={() => openModal(installer)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ddd', background: 'white' }}><Edit2 size={16} /></button>
-                                        <button onClick={() => handleDelete(installer.id)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #fee', background: '#ffebee', color: 'red' }}><Trash2 size={16} /></button>
+                                        <button onClick={() => openModal(installer)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ddd', background: 'white' }} title="Edit Installer"><Edit2 size={16} /></button>
+                                        <button 
+                                            onClick={() => {
+                                                setSelectedInstallerForWorks(installer)
+                                                setShowWorksModal(true)
+                                            }} 
+                                            style={{ padding: '8px', borderRadius: '6px', border: '1px solid #e3f2fd', background: '#e3f2fd', color: '#1976d2' }} 
+                                            title="Manage Portfolio"
+                                        >
+                                            <Briefcase size={16} />
+                                        </button>
+                                        <button onClick={() => handleDelete(installer.id)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #fee', background: '#ffebee', color: 'red' }} title="Delete"><Trash2 size={16} /></button>
                                     </div>
                                 </div>
                             ))}
@@ -1224,6 +1237,13 @@ const AdminDashboard = ({ profile }) => {
                         lastError: error
                     }, null, 2)}</pre>
                 </div>
+                {/* INSTALLER WORKS MODAL */}
+                <InstallerWorksModal 
+                    isOpen={showWorksModal}
+                    onClose={() => setShowWorksModal(false)}
+                    installer={selectedInstallerForWorks}
+                    onNotify={(msg, type) => alert(msg)} // Simple alert for admin dashboard notifications
+                />
             </div>
         </section >
     )

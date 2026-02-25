@@ -17,7 +17,7 @@ const ProductImageGallery = ({ images, primaryImage, name, onToggleSave, isSaved
     };
 
     return (
-        <div className="product-image-container" style={{ width: '100%', aspectRatio: '1/1', background: '#f5f5f5', overflow: 'hidden', position: 'relative' }}>
+        <div className="product-image-container" style={{ width: '100%', aspectRatio: '3/2', background: '#f5f5f5', overflow: 'hidden', position: 'relative' }}>
             <img
                 src={galleryImages[currentIndex]}
                 alt={`${name} - Image ${currentIndex + 1}`}
@@ -489,44 +489,41 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                         </div>
 
                         {/* Product Grid */}
-                        <div className="grid grid-3 marketplace-grid" style={{ gap: '24px' }}>
+                        <div className="grid grid-4 marketplace-grid" style={{ gap: '16px' }}>
                             {loading ? (
-                                <div style={{ gridColumn: 'span 3', textAlign: 'center', padding: '100px 0' }}>
+                                <div style={{ gridColumn: 'span 4', textAlign: 'center', padding: '100px 0' }}>
                                     <div className="spinner" style={{ marginBottom: '20px' }}></div>
                                     <p>Loading catalog...</p>
                                 </div>
                             ) : error ? (
-                                <div style={{ gridColumn: 'span 3', textAlign: 'center', padding: '50px', background: '#fff0f0', borderRadius: '20px', color: '#d32f2f' }}>
+                                <div style={{ gridColumn: 'span 4', textAlign: 'center', padding: '50px', background: '#fff0f0', borderRadius: '20px', color: '#d32f2f' }}>
                                     <p><b>Oops!</b> {error}</p>
                                     <button onClick={fetchProducts} className="btn btn-secondary" style={{ marginTop: '16px' }}>Try Again</button>
                                 </div>
                             ) : filteredProducts.length === 0 ? (
-                                <div style={{ gridColumn: 'span 3', textAlign: 'center', padding: '100px 0', background: 'white', borderRadius: '20px', border: '1px dashed #ddd' }}>
+                                <div style={{ gridColumn: 'span 4', textAlign: 'center', padding: '100px 0', background: 'white', borderRadius: '20px', border: '1px dashed #ddd' }}>
                                     <p style={{ color: '#999', fontSize: '1.1rem' }}>No products match your criteria.</p>
                                     <button onClick={() => {setFilter('All'); setSearchQuery(''); setPriceRange('all')}} style={{ marginTop: '16px', color: 'var(--trust-blue)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>Clear all filters</button>
                                 </div>
                             ) : filteredProducts.map(product => (
                                 <div key={product.id} className="product-card glass-card" style={{
-                                    background: 'white', borderRadius: 'var(--radius-lg)', overflow: 'hidden',
-                                    boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0', position: 'relative',
+                                    background: 'white', borderRadius: '14px', overflow: 'hidden',
+                                    boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid #f0f0f0', position: 'relative',
                                     display: 'flex', flexDirection: 'column',
-                                    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                                    transition: 'all 0.3s ease'
                                 }}>
                                     {product.verified && (
-                                        <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                            <div className="badge badge-verified" style={{ background: 'white', display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                                                <ShieldCheck size={14} /> SunGate Verified
+                                        <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 10 }}>
+                                            <div className="badge badge-verified" style={{ background: 'white', display: 'flex', alignItems: 'center', gap: '3px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', fontSize: '0.65rem', padding: '3px 7px' }}>
+                                                <ShieldCheck size={11} /> Verified
                                             </div>
-                                            {product.duty_free && (
-                                                <>
-                                                    <div className="badge" style={{ background: 'var(--zambia-green)', color: 'white', display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', fontSize: '0.7rem' }}>
-                                                        <CheckCircle size={14} /> 0% Duty & VAT
-                                                    </div>
-                                                    <div className="badge" style={{ background: 'var(--trust-blue)', color: 'white', display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', fontSize: '0.7rem' }}>
-                                                        <ShieldCheck size={14} /> ZABS SI 20
-                                                    </div>
-                                                </>
-                                            )}
+                                        </div>
+                                    )}
+                                    {product.duty_free && (
+                                        <div style={{ position: 'absolute', top: product.verified ? '32px' : '8px', left: '8px', zIndex: 10 }}>
+                                            <div className="badge" style={{ background: 'var(--zambia-green)', color: 'white', display: 'flex', alignItems: 'center', gap: '3px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', fontSize: '0.62rem', padding: '3px 7px' }}>
+                                                <CheckCircle size={10} /> 0% Duty
+                                            </div>
                                         </div>
                                     )}
 
@@ -539,45 +536,47 @@ const Marketplace = ({ session, profile, onNotify, onAddToCart, refreshTrigger, 
                                         productId={product.id}
                                     />
 
-                                    <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--sun-orange)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>{product.category}</div>
-                                        <h3 style={{ fontSize: '1.2rem', marginBottom: '12px', minHeight: '2.8rem' }}>{product.name}</h3>
+                                    <div style={{ padding: '14px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--sun-orange)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '3px', letterSpacing: '0.04em' }}>{product.category}</div>
+                                        <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '10px', lineHeight: '1.35', minHeight: '2.5rem' }}>{product.name}</h3>
 
-                                        <table style={{ width: '100%', fontSize: '0.85rem', marginBottom: '20px', borderCollapse: 'collapse' }}>
-                                            <tbody>
-                                                {Object.entries(product.specs).map(([key, value]) => (
-                                                    <tr key={key} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                                                        <td style={{ padding: '6px 0', color: 'var(--text-muted)' }}>{key}</td>
-                                                        <td style={{ padding: '6px 0', fontWeight: 600, textAlign: 'right' }}>{value}</td>
-                                                    </tr>
+                                        {/* Compact spec pills - only show first 2 */}
+                                        {product.specs && Object.keys(product.specs).length > 0 && (
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '12px' }}>
+                                                {Object.entries(product.specs).slice(0, 2).map(([key, value]) => (
+                                                    <span key={key} style={{
+                                                        fontSize: '0.7rem', padding: '3px 8px',
+                                                        background: '#f4f6fb', borderRadius: '99px',
+                                                        color: '#555', fontWeight: 600, border: '1px solid #e8eaf4'
+                                                    }}>
+                                                        {key}: {value}
+                                                    </span>
                                                 ))}
-                                            </tbody>
-                                        </table>
+                                            </div>
+                                        )}
 
                                         <div style={{ marginTop: 'auto' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }} className="mobile-stack">
-                                                <div className="price" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--trust-blue)' }}>{product.price}</div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', color: 'var(--zambia-green)', fontWeight: 600 }}>
-                                                    <CheckCircle size={14} /> In Stock (Zambia)
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                                <div className="price" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--trust-blue)' }}>{product.price}</div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', fontSize: '0.7rem', color: 'var(--zambia-green)', fontWeight: 600 }}>
+                                                    <CheckCircle size={12} /> In Stock
                                                 </div>
                                             </div>
 
-
-
-                                            <div style={{ display: 'flex', gap: '8px' }} className="mobile-stack">
+                                            <div style={{ display: 'flex', gap: '6px' }}>
                                                 <button
                                                     onClick={() => handleRequestQuote(product)}
                                                     className="btn btn-primary"
-                                                    style={{ flex: 1, padding: '10px', fontSize: '0.9rem' }}
+                                                    style={{ flex: 1, padding: '8px 6px', fontSize: '0.8rem' }}
                                                 >
                                                     Request Quote
                                                 </button>
                                                 <button
                                                     onClick={() => handleAddToCart(product)}
                                                     className="btn"
-                                                    style={{ padding: '10px', borderRadius: 'var(--radius-md)', border: '1px solid #ddd', background: 'white' }}
+                                                    style={{ padding: '8px 10px', borderRadius: 'var(--radius-md)', border: '1px solid #ddd', background: 'white' }}
                                                 >
-                                                    <ShoppingCart size={18} />
+                                                    <ShoppingCart size={16} />
                                                 </button>
                                             </div>
                                         </div>
