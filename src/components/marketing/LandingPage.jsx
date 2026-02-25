@@ -7,6 +7,7 @@ import FeaturedInstallers from './FeaturedInstallers';
 import TrustBadges from './TrustBadges';
 import KnowledgeHubPreview from './KnowledgeHubPreview';
 import LoadSheddingPulse from './LoadSheddingPulse';
+import ReferralPromo from './ReferralPromo';
 
 const LandingPage = ({ onAuthClick, zescoRate }) => {
   const handleDashboardClick = () => onAuthClick('user');
@@ -16,6 +17,7 @@ const LandingPage = ({ onAuthClick, zescoRate }) => {
       <Hero onDashboardClick={handleDashboardClick} />
       <TrustBadges />
       <Benefits onAuthClick={onAuthClick} />
+      <ReferralPromo />
       <HowItWorks onCalcClick={() => document.getElementById('public-calculator').scrollIntoView({ behavior: 'smooth' })} />
       <section style={{ padding: '40px 0 0' }}>
         <LoadSheddingPulse />
