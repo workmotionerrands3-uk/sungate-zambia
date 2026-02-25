@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react'
 import { MapPin, Star, ShieldCheck, MessageCircle, Phone, Award, Search, Users, Briefcase, ChevronRight, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 

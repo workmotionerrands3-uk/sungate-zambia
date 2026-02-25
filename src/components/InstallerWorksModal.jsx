@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react'
 import { X, Save, Plus, Trash2, Image as ImageIcon, FileText, AlertCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
