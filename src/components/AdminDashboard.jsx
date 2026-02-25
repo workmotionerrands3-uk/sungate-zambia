@@ -126,7 +126,7 @@ const AdminDashboard = ({ profile }) => {
                 const { data } = await supabase.from('admin_logs').select('*').order('created_at', { ascending: false }).limit(50)
                 setLogs(data || [])
             } else if (activeTab === 'settings') {
-                const { data } = await supabase.from('site_settings').select('*').single()
+                const { data } = await supabase.from('site_settings').select('*').maybeSingle()
                 if (data) setSettings(data)
             }
         } catch (err) {

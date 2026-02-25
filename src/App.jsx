@@ -532,7 +532,7 @@ const App = () => {
 
   const fetchSiteSettings = async () => {
     try {
-      const { data, error } = await supabase.from('site_settings').select('*').single();
+      const { data, error } = await supabase.from('site_settings').select('*').maybeSingle();
       if (data) setSiteSettings(data);
     } catch (err) {
       console.warn("Failed to fetch site settings, using defaults.", err);
